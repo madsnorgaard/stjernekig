@@ -1,0 +1,9 @@
+services:
+  stjernekig.commands:
+    class: Drupal\stjernekig\Commands\StjernekigCommands
+    arguments:
+      - '@stjernekig.apod_client'
+      - '@queue'
+      - '@plugin.manager.queue_worker'
+    tags:
+      - { name: drush.command }

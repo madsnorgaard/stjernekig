@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Stjernekig — daily NASA APOD importer.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_cron().
+ *
+ * Queues today's APOD entry for import once per cron run.
+ */
+function stjernekig_cron(): void {
+  $queue = \Drupal::queue('stjernekig_apod_import');
+  $queue->createItem(['date' => date('Y-m-d')]);
+}

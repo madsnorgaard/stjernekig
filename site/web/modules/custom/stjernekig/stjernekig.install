@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * @file
+ * Install hooks for Stjernekig — creates content type and fields.
+ */
+
+declare(strict_types=1);
+
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\node\Entity\NodeType;
+
+/**
+ * Implements hook_install().
+ */
+function stjernekig_install(): void {
+  if (!NodeType::load('apod_entry')) {
+    NodeType::create([
+      'type' => 'apod_entry',
+      'name' => 'APOD Entry',
+      'description' => 'A single Astronomy Picture of the Day import.',
+      'display_submitted' => FALSE,
+      'new_revision' => FALSE,
+    ])->save();
+  }
+
+  _stjernekig_install_field('field_apod_date', 'datetime', 'APOD Date', [
+    'datetime_type' => 'date',
+  ]);
+  _stjernekig_install_field('field_apod_explanation', 'text_long', 'Explanation');
+  _stjernekig_install_field('field_apod_copyright', 'string', 'Copyright');
+  _stjernekig_install_field('field_apod_image', 'image', 'Hero Image', [], [
+    'file_directory' => 'apod/[date:custom:Y-m]',
+    'alt_field' => TRUE,
+    'alt_field_required' => FALSE,
+  ]);
+
+  $display = \Drupal::service('entity_display.repository');
+
+  $display->getViewDisplay('node', 'apod_entry', 'default')
+    ->setComponent('field_apod_image', ['type' => 'image', 'weight' => 0, 'label' => 'hidden'])
+    ->setComponent('field_apod_explanation', ['type' => 'text_default', 'weight' => 1, 'label' => 'hidden'])
+    ->setComponent('field_apod_copyright', ['type' => 'string', 'weight' => 2, 'label' => 'inline'])
+    ->setComponent('field_apod_date', ['type' => 'datetime_default', 'weight' => 3, 'label' => 'inline'])
+    ->save();
+
+  $display->getFormDisplay('node', 'apod_entry', 'default')
+    ->setComponent('field_apod_date', ['type' => 'datetime_default', 'weight' => 1])
+    ->setComponent('field_apod_image', ['type' => 'image_image', 'weight' => 2])
+    ->setComponent('field_apod_explanation', ['type' => 'text_textarea', 'weight' => 3])
+    ->setComponent('field_apod_copyright', ['type' => 'string_textfield', 'weight' => 4])
+    ->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function stjernekig_uninstall(): void {
+  foreach (['field_apod_date', 'field_apod_explanation', 'field_apod_copyright', 'field_apod_image'] as $name) {
+    if ($field = FieldConfig::loadByName('node', 'apod_entry', $name)) {
+      $field->delete();
+    }
+    if ($storage = FieldStorageConfig::loadByName('node', $name)) {
+      $storage->delete();
+    }
+  }
+  if ($type = NodeType::load('apod_entry')) {
+    $type->delete();
+  }
+}
+
+function _stjernekig_install_field(string $name, string $type, string $label, array $storage_settings = [], array $field_settings = []): void {
+  if (!FieldStorageConfig::loadByName('node', $name)) {
+    FieldStorageConfig::create([
+      'field_name' => $name,
+      'entity_type' => 'node',
+      'type' => $type,
+      'settings' => $storage_settings,
+    ])->save();
+  }
+
+  if (!FieldConfig::loadByName('node', 'apod_entry', $name)) {
+    FieldConfig::create([
+      'field_name' => $name,
+      'entity_type' => 'node',
+      'bundle' => 'apod_entry',
+      'label' => $label,
+      'settings' => $field_settings,
+    ])->save();
+  }
+}

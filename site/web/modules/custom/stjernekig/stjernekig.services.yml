@@ -1,0 +1,10 @@
+services:
+  logger.channel.stjernekig:
+    parent: logger.channel_base
+    arguments: ['stjernekig']
+
+  stjernekig.apod_client:
+    class: Drupal\stjernekig\Service\ApodClient
+    arguments:
+      - '@http_client'
+      - '@logger.channel.stjernekig'

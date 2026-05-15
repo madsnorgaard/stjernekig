@@ -1,0 +1,12 @@
+name: Stjernekig
+type: module
+description: 'NASA Astronomy Picture of the Day archive. Imports daily via the APOD API.'
+package: Stjernekig
+core_version_requirement: ^10
+dependencies:
+  - drupal:node
+  - drupal:taxonomy
+  - drupal:views
+  - drupal:datetime
+  - drupal:file
+  - drupal:image

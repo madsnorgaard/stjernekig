@@ -1,0 +1,68 @@
+# Secrets and local overrides
+.env
+docker-compose.override.yml
+
+# Docker volumes (Drupal files, DB)
+docker-volumes/*
+
+# DB dumps
+*.sql
+*.sql.gz
+
+# Composer-installed dependencies
+site/vendor/
+
+# Drupal scaffold (these are managed by drupal/core-composer-scaffold)
+.editorconfig
+.gitattributes
+
+# Drupal core
+site/web/core/
+
+# Root core files (shipped by scaffold)
+site/web/.*
+site/web/*.txt
+site/web/*.php
+site/web/web.config
+site/web/example.gitignore
+
+# Contrib modules / themes / profiles / libraries (these come from composer)
+site/web/libraries
+site/web/modules/README.txt
+site/web/modules/contrib/
+site/web/profiles/README.txt
+site/web/profiles/contrib/
+site/web/themes/README.txt
+site/web/themes/contrib/
+site/drush/Commands/contrib/
+
+# Sites files
+site/web/sites/README.txt
+site/web/sites/default/default*
+site/web/sites/default/files
+site/web/sites/example*
+site/web/sites/development.services.yml
+
+# Default site settings.php is mounted from docker-configs/, not committed
+site/web/sites/default/settings.php
+site/web/sites/default/settings.local.php
+site/web/sites/default/services.yml
+
+# drupal-check / simpletest
+site/web/sites/simpletest
+
+# Node
+node_modules
+
+# Unit test
+site/.phpunit.result.cache
+
+# OS
+.DS_Store
+
+# Mads's notes/drafts pattern — these belong in ~/Notes/stjernekig/, never in the repo
+*-til-sune.md
+*-email-*.md
+*-hosting-notes.md
+*-draft.md
+*-notes.md

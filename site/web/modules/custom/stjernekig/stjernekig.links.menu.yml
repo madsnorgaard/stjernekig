@@ -1,0 +1,6 @@
+stjernekig.archive:
+  title: 'APOD Archive'
+  description: 'Browse the Astronomy Picture of the Day archive.'
+  route_name: stjernekig.archive
+  menu_name: main
+  weight: 0

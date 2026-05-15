@@ -1,0 +1,7 @@
+stjernekig.archive:
+  path: '/apod'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ApodController::archive'
+    _title: 'Astronomy Picture of the Day'
+  requirements:
+    _access: 'TRUE'

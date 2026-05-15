@@ -1,0 +1,75 @@
+# Shared volume set — referenced by both php and nginx services since fpm
+# and nginx need the same view of the codebase and Drupal settings.
+x-volumes: &site-volumes
+  volumes:
+    # PHP
+    - ./docker-configs/php/php-fpm.conf:/usr/local/etc/php-fpm.conf
+    - ./docker-configs/php/php.ini:/usr/local/etc/php/php.ini
+
+    # The Drupal site (composer.json lives in here)
+    - ./site:/var/www/site
+
+    # Drupal settings — kept outside the Drupal codebase so the docroot
+    # remains free of secrets and so we can swap envs by changing the mount.
+    - ./docker-configs/drupal/settings.php:/var/www/site/web/sites/default/settings.php
+    - ./docker-configs/drupal/settings.local.php:/var/www/site/web/sites/default/settings.local.php
+
+    # Drupal file storage outside the codebase
+    - ./docker-volumes/files/public:/var/www/site/web/sites/default/files
+    - ./docker-volumes/files/private:/var/www/private-files
+    - ./docker-volumes/files/tmp:/var/www/temp-files
+
+    # Nginx
+    - ./docker-configs/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    - ./docker-configs/nginx/common.conf:/etc/nginx/common.conf
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: stjernekig_mysql
+    env_file:
+      - .env
+    volumes:
+      - mysql:/var/lib/mysql
+    restart: always
+    networks:
+      - stjernekig_net
+
+  php:
+    image: eksponent/php8:8-2-fpm
+    container_name: stjernekig_php
+    env_file:
+      - .env
+    environment:
+      PATH: "/var/www/site/vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    working_dir: /var/www/site/web
+    <<: *site-volumes
+    expose:
+      - "6000"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - stjernekig_net
+
+  webserver:
+    image: nginx:1.23
+    container_name: stjernekig_nginx
+    restart: always
+    <<: *site-volumes
+    depends_on:
+      - php
+    environment:
+      - VIRTUAL_HOST=stjernekig.docker
+    networks:
+      stjernekig_net:
+        aliases:
+          - stjernekig.docker
+
+volumes:
+  mysql:
+
+networks:
+  stjernekig_net:
+    driver: bridge
+    name: stjernekig_net
