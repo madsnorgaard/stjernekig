@@ -32,15 +32,18 @@ Then open <http://stjernekig.docker/apod> in a browser.
 
 ## Session arc
 
-| Session | Topic                                                                         | What gets built / shown                                                                                |
-| ------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **01**  | Local setup · Best practices · Plan mode + debug                              | This repo's scaffold. Plant: APOD importer silently drops video days. Live debug + plan-mode fix.       |
-| **02**  | Skills                                                                        | `drupal-security` audits `ApodClient`. `drupal-expert` refactors. `drupal-migration` imports a CSV.    |
-| **03**  | Sub-agents · parallel research                                                | Explore agent finds every external API call in the codebase.                                            |
-| **04**  | Hooks · settings · custom commands                                             | Add a pre-commit `drupal-check` hook. `/update-config` and `/fewer-permission-prompts`.                |
-| **05**  | `/loop`, `/schedule`, autonomous agents                                       | The daily APOD cron, but as a remote-scheduled routine.                                                 |
+Six 30-minute sessions, each ships a real diff. Full course outline in [`docs/course-outline.md`](docs/course-outline.md).
 
-Each session has a talk track in `docs/session-NN-*.md`.
+| # | Title | Vibe | Recipe |
+| --- | --- | --- | --- |
+| **01** | Setup · Plan mode · Debug | *Sherlock — the bug is hiding in plain sight* | [docs/session-01-setup-debug.md](docs/session-01-setup-debug.md) |
+| **02** | Skills | *Drake meme — there's a skill for that* | [docs/session-02-skills.md](docs/session-02-skills.md) |
+| **03** | Sub-agents | *Avengers Assemble — three Explore agents in parallel* | [docs/session-03-subagents.md](docs/session-03-subagents.md) |
+| **04** | Hooks | *"This is fine" dog* | [docs/session-04-hooks.md](docs/session-04-hooks.md) |
+| **05** | `/loop` & `/schedule` | *Lumbergh — Claude is doing the cron now* | [docs/session-05-loop-schedule.md](docs/session-05-loop-schedule.md) |
+| **06** | `/ultrareview` | *Galaxy brain max — 4 cloud agents on your branch* | [docs/session-06-ultrareview.md](docs/session-06-ultrareview.md) |
+
+Phase 2 ideas live in [docs/future-sessions.md](docs/future-sessions.md).
 
 ## What's inside
 

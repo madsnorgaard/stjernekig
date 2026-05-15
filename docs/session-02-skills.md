@@ -1,21 +1,60 @@
-# Session 02 — Skills
+# Session 02 — Skills 🛒
 
-**Date:** TBD (after session 01 on 2026-05-18)
-**Length:** 30 minutes
-**Prereq:** Session 01 — APOD importer up and running, the video-skip fix shipped.
+> **Vibe:** *Drake meme.*
+> 🙅 Bottom panel: writing 14 paragraphs of "you are a senior Drupal security expert, please consider..."
+> 🙆 Top panel: `/drupal-security`
 
-## Planned demos
+**Date:** TBD (after 2026-05-18)
+**Length:** 30 min
+**Prereq:** Session 01 shipped — APOD importer with the video-skip fix in `src/Service/ApodClient.php`.
 
-1. **`drupal-security` skill audits `ApodClient`.**
-   The fix from session 1 doesn't sanitize the URL it downloads. Run the skill on the file, watch it flag the missing host allowlist and the lack of file-type validation. Apply the fix it suggests.
+---
 
-2. **`drupal-expert` skill refactors the worker.**
-   The queue worker has grown a bit. Use the skill to suggest improvements — dependency-injected services, separation of fetch vs. persist, easier testing.
+## Recipe card
 
-3. **`drupal-migration` skill imports a legacy APOD CSV.**
-   Hand Claude a CSV of historical APODs (say, 1995–2000) and ask it to use the migration skill to write a Migrate Plus YAML migration. Watch it scaffold the migration source, process, and destination.
+| | |
+| --- | --- |
+| **Serves** | Eksponent dev team (8–12 ppl) |
+| **Prep**   | 5 min (audience reads the diff from session 1) |
+| **Cook**   | 25 min |
+| **Pairs well with** | [Session 03 — Sub-agents](session-03-subagents.md) |
 
-## Open questions to answer before session 02
+**Ingredients**
 
-- Which Skill demo is the cleanest *single* one to anchor the session? (Probably `drupal-security`, since it's a continuation of session 01's fix.)
-- Should the audience clone the repo and follow along, or watch-only?
+- The session-01 fix already merged into `main`
+- `/drupal-security` skill (installed globally — confirm with `ls ~/.claude/skills/` before the session)
+- `/drupal-expert` skill
+- Optional: a NASA video-day URL in scope to discuss attack surface honestly
+
+**Method (talk track)**
+
+| Time | Segment | What Mads does on screen |
+| --- | --- | --- |
+| 0–3   | Hook              | Show the session 01 fix. Ask the room: *"Hvad har vi glemt at validere?"* Collect 2–3 guesses. |
+| 3–13  | `/drupal-security` | Run the skill on `src/Service/ApodClient.php` + `ApodImportWorker.php`. Watch it surface: no host allowlist (SSRF risk), no MIME/extension validation on the downloaded file, log message lacks the date that failed. |
+| 13–20 | Apply the fix     | Approve plan-mode fix: allowlist `apod.nasa.gov` and `*.gsfc.nasa.gov`, validate extension in `[png, jpg, jpeg, gif, webp]` before `writeData()`, enrich the warning log. |
+| 20–27 | `/drupal-expert`  | Brief demo. Hand it the worker; let it suggest splitting fetch/persist into separate methods or services. Don't take every suggestion — pick one to ship live. |
+| 27–30 | Recap + teaser    | Show the diff. Note: "vi spørger ikke Claude pænt om sikkerhed — vi kalder den skill der er bygget til det." Tease Session 03. |
+
+## Plating (what should land for the audience)
+
+- The skill is *less typing*, not *more magic*. It's a contract: "this kind of file gets this kind of audit."
+- Skills shine when their scope matches your task. Don't use `/drupal-security` to format code.
+- `/drupal-expert` is opinionated. You don't have to take its suggestions. Disagreement is data.
+
+## Notes (gotchas)
+
+- **Skills must be installed**. Check `ls ~/.claude/skills/` first. If `drupal-security` is missing, the demo dies — install via `agent-resources` per the global MEMORY.md.
+- **The room will ask: "do skills replace prompts?"** Answer: no. Skills are pre-built prompts with curated context. You still write prompts for everything else.
+- **Watch for over-fitting.** `/drupal-security` will flag the planted bug too. That's fine — show how to triage which findings are urgent.
+- **`/drupal-expert` is chatty.** Cap the demo at 5–7 min or it eats the recap.
+
+## Code that should land in `main` after this session
+
+```
++ ApodClient::validateHost()        — allowlist check
++ ApodClient::validateExtension()   — file extension allowlist
+~ ApodImportWorker::processItem()   — uses the validators, richer log
+```
+
+(Or whatever variant survives the live discussion.)
