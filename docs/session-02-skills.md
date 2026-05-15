@@ -6,7 +6,7 @@
 
 **Date:** TBD (after 2026-05-18)
 **Length:** 30 min
-**Prereq:** Session 01 shipped — APOD importer with the video-skip fix in `src/Service/ApodClient.php`.
+**Prereq:** Session 01 shipped. The video-day bug was *identified* but not fixed — this session picks up exactly where S01 left off, and asks `/drupal-security` to weigh in before we touch anything.
 
 ---
 
@@ -21,7 +21,7 @@
 
 **Ingredients**
 
-- The session-01 fix already merged into `main`
+- The S01-noted bug still unfixed (the whole point — we let the skill weigh in first)
 - `/drupal-security` skill (installed globally — confirm with `ls ~/.claude/skills/` before the session)
 - `/drupal-expert` skill
 - Optional: a NASA video-day URL in scope to discuss attack surface honestly
@@ -30,9 +30,9 @@
 
 | Time | Segment | What Mads does on screen |
 | --- | --- | --- |
-| 0–3   | Hook              | Show the session 01 fix. Ask the room: *"Hvad har vi glemt at validere?"* Collect 2–3 guesses. |
-| 3–13  | `/drupal-security` | Run the skill on `src/Service/ApodClient.php` + `ApodImportWorker.php`. Watch it surface: no host allowlist (SSRF risk), no MIME/extension validation on the downloaded file, log message lacks the date that failed. |
-| 13–20 | Apply the fix     | Approve plan-mode fix: allowlist `apod.nasa.gov` and `*.gsfc.nasa.gov`, validate extension in `[png, jpg, jpeg, gif, webp]` before `writeData()`, enrich the warning log. |
+| 0–3   | Recap from S01    | Show the diff state from Monday — the video-day bug we identified but didn't fix. Read the plan-mode output back. *"Vi lod skillen kigge først. Lad os se hvad den finder."* |
+| 3–13  | `/drupal-security` | Run the skill on `src/Service/ApodClient.php` + `ApodImportWorker.php`. Watch it surface: the original video bug PLUS no host allowlist (SSRF risk), no MIME/extension validation on the downloaded file, log message lacks the date that failed. |
+| 13–20 | Apply the fix     | Approve plan-mode fix that bundles both: the video-day skip from S01 + allowlist `apod.nasa.gov` and `*.gsfc.nasa.gov` + validate extension in `[png, jpg, jpeg, gif, webp]` before `writeData()` + enrich the warning log. |
 | 20–27 | `/drupal-expert`  | Brief demo. Hand it the worker; let it suggest splitting fetch/persist into separate methods or services. Don't take every suggestion — pick one to ship live. |
 | 27–30 | Recap + teaser    | Show the diff. Note: "vi spørger ikke Claude pænt om sikkerhed — vi kalder den skill der er bygget til det." Tease Session 03. |
 

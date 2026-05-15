@@ -20,7 +20,7 @@ The Eksponent Claude Code internal series, run by Mads. Six sessions × 30 minut
 
 | # | Title | Date | Vibe | Recipe |
 | --- | --- | --- | --- | --- |
-| **01** | Setup · Best practices · Plan mode + debug | **Mon 2026-05-18** | *Sherlock with a magnifying glass — the bug is hiding in plain sight* | [session-01-setup-debug.md](session-01-setup-debug.md) |
+| **01** | Install · First project · Tour of Stjernekig | **Mon 2026-05-18** | *Sherlock — install, build, tour, find the bug (don't fix it yet)* | [session-01-setup-debug.md](session-01-setup-debug.md) |
 | **02** | Skills | TBD | *Drake meme — there's a skill for that* | [session-02-skills.md](session-02-skills.md) |
 | **03** | Sub-agents | TBD | *Avengers Assemble — three Explore agents in parallel* | [session-03-subagents.md](session-03-subagents.md) |
 | **04** | Hooks | TBD | *"This is fine" dog — life without pre-commit hooks* | [session-04-hooks.md](session-04-hooks.md) |
@@ -45,8 +45,8 @@ Each session ships a real, reviewable diff on top of the previous one. By sessio
 
 | Session | Net effect on the codebase |
 | --- | --- |
-| 01 | Initial scaffold · planted bug · video-skip fix |
-| 02 | Security hardening (host allowlist, MIME check) · worker refactor |
+| 01 | Initial scaffold · planted bug identified (not yet fixed) |
+| 02 | Video-skip fix + security hardening (host allowlist, MIME check) · worker refactor |
 | 03 | `drush stjernekig:import-range` feature, designed via parallel Explore |
 | 04 | `.claude/settings.json` with `drupal-check` Stop hook · phpcs cleanups |
 | 05 | `hook_cron()` retired · daily import is now a `/schedule` routine |

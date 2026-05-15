@@ -36,7 +36,7 @@ Six 30-minute sessions, each ships a real diff. Full course outline in [`docs/co
 
 | # | Title | Vibe | Recipe |
 | --- | --- | --- | --- |
-| **01** | Setup · Plan mode · Debug | *Sherlock — the bug is hiding in plain sight* | [docs/session-01-setup-debug.md](docs/session-01-setup-debug.md) |
+| **01** | Install · First project · Tour | *Sherlock — install, build, tour, spot the bug* | [docs/session-01-setup-debug.md](docs/session-01-setup-debug.md) |
 | **02** | Skills | *Drake meme — there's a skill for that* | [docs/session-02-skills.md](docs/session-02-skills.md) |
 | **03** | Sub-agents | *Avengers Assemble — three Explore agents in parallel* | [docs/session-03-subagents.md](docs/session-03-subagents.md) |
 | **04** | Hooks | *"This is fine" dog* | [docs/session-04-hooks.md](docs/session-04-hooks.md) |
