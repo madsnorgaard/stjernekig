@@ -12,7 +12,7 @@
     "require": {
         "composer/installers": "^2.0",
         "drupal/admin_toolbar": "^3.0",
-        "drupal/core-composer-scaffold": "^10",
+        "drupal/core-composer-scaffold": "^11",
         "drupal/core-project-message": "^11",
         "drupal/core-recommended": "^10",
         "drush/drush": "^12"
