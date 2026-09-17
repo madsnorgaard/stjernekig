@@ -36,7 +36,7 @@ services:
       - stjernekig_net
 
   php:
-    image: eksponent/php8:8-2-fpm
+    image: eksponent/php8:8-4-fpm
     container_name: stjernekig_php
     env_file:
       - .env
