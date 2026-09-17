@@ -53,7 +53,7 @@ services:
       - stjernekig_net
 
   webserver:
-    image: nginx:1.23
+    image: nginx:1.31
     container_name: stjernekig_nginx
     restart: always
     <<: *site-volumes
