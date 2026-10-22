@@ -1,0 +1,34 @@
+services:
+  logger.channel.stjernekig:
+    parent: logger.channel_base
+    arguments: ['stjernekig']
+
+  stjernekig.parser:
+    class: Drupal\stjernekig\Client\ApodParser
+
+  stjernekig.client:
+    class: Drupal\stjernekig\Client\ApodClient
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@stjernekig.parser'
+      - '@logger.channel.stjernekig'
+
+  stjernekig.importer:
+    class: Drupal\stjernekig\Importer\ApodImporter
+    arguments:
+      - '@stjernekig.client'
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@file.repository'
+      - '@file_system'
+      - '@config.factory'
+      - '@state'
+      - '@logger.channel.stjernekig'
+
+  stjernekig.archive:
+    class: Drupal\stjernekig\Archive\ArchiveRepository
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@config.factory'

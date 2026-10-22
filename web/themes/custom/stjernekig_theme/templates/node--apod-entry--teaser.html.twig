@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * One entry as a card in a grid.
+ */
+#}
+<article{{ attributes.addClass('apod-card', 'apod-card--' ~ apod_media_type) }}>
+  <a class="apod-card__link" href="{{ apod_url }}">
+    <div class="apod-card__media">
+      {% if content.field_apod_image|render|trim %}
+        {{ content.field_apod_image }}
+      {% else %}
+        <div class="apod-card__placeholder" aria-hidden="true">✦</div>
+      {% endif %}
+      {% if apod_media_type == 'video' %}<span class="apod-card__badge">{{ 'Video'|t }}</span>{% endif %}
+    </div>
+    <div class="apod-card__text">
+      <time class="apod-card__date" datetime="{{ apod_date_iso }}">{{ apod_date }}</time>
+      <h3 class="apod-card__title">{{ label }}</h3>
+    </div>
+  </a>
+</article>

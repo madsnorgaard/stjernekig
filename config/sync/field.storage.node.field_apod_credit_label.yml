@@ -1,0 +1,26 @@
+uuid: b0ed4552-5074-4edd-926a-86e643e6a3af
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: gbVeQDz8Rtk5YnqnybR2qxCY-2TnYI_8-OHrxxAVpOI
+id: node.field_apod_credit_label
+field_name: field_apod_credit_label
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

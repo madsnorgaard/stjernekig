@@ -1,0 +1,16 @@
+uuid: 79577b33-7b41-447d-a04e-51dd90ec5ead
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: QdRHVW55MS6lwNE33H7Hyl6S6cDeRwJeWIfATGjg3p0
+name: 'APOD entry'
+type: apod_entry
+description: "One day's Astronomy Picture of the Day, imported from NASA."
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

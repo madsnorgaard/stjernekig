@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+    - stjernekig
+id: apod_long
+label: APOD long date
+locked: false
+pattern: j F Y

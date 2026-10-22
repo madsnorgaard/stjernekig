@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * The picture or video of the day.
+ *
+ * Available variables:
+ * - media_type: 'image' or 'video'.
+ * - image: a render array for the local picture, or null.
+ * - video_url: embed URL for video entries.
+ * - remote_url: full resolution original at NASA.
+ * - title: entry title, used for alt and iframe title.
+ * - copyrighted: whether the credit line carries a copyright notice.
+ * - source_url: the entry's page at NASA.
+ */
+#}
+<figure class="apod-hero apod-hero--{{ media_type }}">
+  {% if media_type == 'video' and video_url %}
+    <div class="apod-video">
+      <iframe src="{{ video_url }}" title="{{ title }}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  {% elseif image %}
+    {% if remote_url %}<a href="{{ remote_url }}" class="apod-hero__link" rel="noopener" title="{{ 'Full resolution at NASA'|t }}">{% endif %}
+      {{ image }}
+    {% if remote_url %}</a>{% endif %}
+  {% else %}
+    <div class="apod-hero__placeholder">
+      <p>
+        {% if copyrighted %}
+          {{ 'This picture is copyrighted and is not stored here.'|t }}
+        {% else %}
+          {{ 'The picture for this entry is not available locally.'|t }}
+        {% endif %}
+        {% if source_url %}<a href="{{ source_url }}" rel="noopener">{{ 'View it at NASA'|t }}</a>{% endif %}
+      </p>
+    </div>
+  {% endif %}
+</figure>

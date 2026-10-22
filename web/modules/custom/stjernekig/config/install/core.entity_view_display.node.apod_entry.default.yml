@@ -1,0 +1,65 @@
+langcode: en
+status: true
+dependencies:
+  config:
+  - field.field.node.apod_entry.field_apod_authors
+  - field.field.node.apod_entry.field_apod_copyrighted
+  - field.field.node.apod_entry.field_apod_credit
+  - field.field.node.apod_entry.field_apod_credit_label
+  - field.field.node.apod_entry.field_apod_date
+  - field.field.node.apod_entry.field_apod_explanation
+  - field.field.node.apod_entry.field_apod_image
+  - field.field.node.apod_entry.field_apod_legacy_url
+  - field.field.node.apod_entry.field_apod_media_type
+  - field.field.node.apod_entry.field_apod_remote_id
+  - field.field.node.apod_entry.field_apod_remote_url
+  - field.field.node.apod_entry.field_apod_source_url
+  - field.field.node.apod_entry.field_apod_video_url
+  - node.type.apod_entry
+  module:
+  - text
+  - user
+  enforced:
+    module:
+    - stjernekig
+id: node.apod_entry.default
+targetEntityType: node
+bundle: apod_entry
+mode: default
+content:
+  apod_hero:
+    weight: 0
+    region: content
+    settings: {}
+    third_party_settings: {}
+  apod_meta:
+    weight: 2
+    region: content
+    settings: {}
+    third_party_settings: {}
+  apod_navigation:
+    weight: 3
+    region: content
+    settings: {}
+    third_party_settings: {}
+  field_apod_explanation:
+    type: text_default
+    label: hidden
+    weight: 1
+    region: content
+    settings: {}
+    third_party_settings: {}
+hidden:
+  field_apod_authors: true
+  field_apod_copyrighted: true
+  field_apod_credit: true
+  field_apod_credit_label: true
+  field_apod_date: true
+  field_apod_image: true
+  field_apod_legacy_url: true
+  field_apod_media_type: true
+  field_apod_remote_id: true
+  field_apod_remote_url: true
+  field_apod_source_url: true
+  field_apod_video_url: true
+  links: true

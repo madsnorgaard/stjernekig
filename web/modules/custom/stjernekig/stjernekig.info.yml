@@ -1,0 +1,15 @@
+name: Stjernekig
+type: module
+description: 'Archives NASA''s Astronomy Picture of the Day: daily import, full back-catalogue, browsable archive pages, feed and sitemap.'
+package: Stjernekig
+core_version_requirement: ^11
+configure: stjernekig.settings
+dependencies:
+  - drupal:node
+  - drupal:datetime
+  - drupal:file
+  - drupal:image
+  - drupal:text
+  - drupal:options
+  - drupal:path_alias
+  - drupal:filter

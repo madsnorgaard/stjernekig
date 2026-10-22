@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+  - field.storage.node.field_apod_authors
+  - node.type.apod_entry
+  enforced:
+    module:
+    - stjernekig
+id: node.apod_entry.field_apod_authors
+field_name: field_apod_authors
+entity_type: node
+bundle: apod_entry
+label: Authors and editors
+description: ''
+required: false
+translatable: false
+default_value: []
+default_value_callback: ''
+settings: {}
+field_type: string

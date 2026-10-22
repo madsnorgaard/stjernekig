@@ -1,0 +1,20 @@
+uuid: 3e4b65bb-a35c-4f47-97f6-94addbd7d7a0
+langcode: en
+status: true
+dependencies:
+  theme:
+    - stjernekig_theme
+_core:
+  default_config_hash: Oh72CHUkp6cj6dbrXMK2hzCsM05w9cHVoD22rMLQUfk
+id: stjernekig_theme_page_title
+theme: stjernekig_theme
+region: content
+weight: -30
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  label_display: '0'
+  provider: core
+visibility: {  }

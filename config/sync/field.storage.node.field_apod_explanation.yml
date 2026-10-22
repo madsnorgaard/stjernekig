@@ -1,0 +1,24 @@
+uuid: 1a022030-55cf-4f06-ad43-4687431a0b18
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - text
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: H_mB2Dtmdg9Ze-M6qF3iPs_DkB1qKBgG8i2tARrLE5E
+id: node.field_apod_explanation
+field_name: field_apod_explanation
+entity_type: node
+type: text_long
+settings: {  }
+module: text
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

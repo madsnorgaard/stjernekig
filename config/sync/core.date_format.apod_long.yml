@@ -1,0 +1,13 @@
+uuid: 7209a1f8-ebf9-4db7-ba63-660e0b318b61
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: uA3d3_NbFmWB_r4jG3cmIboPhQXKOlAiDcShyeK4fMQ
+id: apod_long
+label: 'APOD long date'
+locked: false
+pattern: 'j F Y'

@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+  - field.storage.node.field_apod_copyrighted
+  - node.type.apod_entry
+  enforced:
+    module:
+    - stjernekig
+id: node.apod_entry.field_apod_copyrighted
+field_name: field_apod_copyrighted
+entity_type: node
+bundle: apod_entry
+label: Copyrighted
+description: True when the credit line carries a copyright or license notice.
+required: false
+translatable: false
+default_value: []
+default_value_callback: ''
+settings:
+  on_label: Copyrighted
+  off_label: Public domain or unmarked
+field_type: boolean

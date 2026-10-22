@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+  - field.storage.node.field_apod_remote_id
+  - node.type.apod_entry
+  enforced:
+    module:
+    - stjernekig
+id: node.apod_entry.field_apod_remote_id
+field_name: field_apod_remote_id
+entity_type: node
+bundle: apod_entry
+label: Source ID
+description: Post ID at the source.
+required: false
+translatable: false
+default_value: []
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

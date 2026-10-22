@@ -1,0 +1,114 @@
+stjernekig.archive:
+  path: '/apod'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::latest'
+    _title: 'Astronomy Picture of the Day'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+
+stjernekig.today:
+  path: '/apod/today'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::today'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+
+stjernekig.random:
+  path: '/apod/random'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::random'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+
+stjernekig.on_this_day:
+  path: '/apod/on-this-day'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::onThisDay'
+    _title: 'On this day'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+
+stjernekig.search:
+  path: '/apod/search'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::search'
+    _title: 'Search the archive'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+
+stjernekig.years:
+  path: '/apod/archive'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::years'
+    _title: 'Archive'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+
+stjernekig.feed:
+  path: '/apod/feed'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\FeedController::rss'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+
+stjernekig.sitemap:
+  path: '/apod/sitemap.xml'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\FeedController::sitemap'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+
+stjernekig.year:
+  path: '/apod/{year}'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::year'
+    _title_callback: '\Drupal\stjernekig\Controller\ArchiveController::yearTitle'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+    year: '\d{4}'
+
+stjernekig.month:
+  path: '/apod/{year}/{month}'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::month'
+    _title_callback: '\Drupal\stjernekig\Controller\ArchiveController::monthTitle'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+    year: '\d{4}'
+    month: '\d{2}'
+
+stjernekig.entry:
+  path: '/apod/{date}'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ArchiveController::entry'
+    _title_callback: '\Drupal\stjernekig\Controller\ArchiveController::entryTitle'
+  requirements:
+    # Public archive page, no restriction by design.
+    _access: 'TRUE'
+    date: '\d{4}-\d{2}-\d{2}'
+
+stjernekig.settings:
+  path: '/admin/config/services/stjernekig'
+  defaults:
+    _form: '\Drupal\stjernekig\Form\SettingsForm'
+    _title: 'Stjernekig settings'
+  requirements:
+    _permission: 'administer stjernekig'
+
+stjernekig.report:
+  path: '/admin/reports/stjernekig'
+  defaults:
+    _controller: '\Drupal\stjernekig\Controller\ReportController::report'
+    _title: 'Stjernekig archive status'
+  requirements:
+    _permission: 'administer stjernekig'

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="Stjernekig">
+  <description>Drupal coding standards for the custom module and theme.</description>
+  <rule ref="Drupal"/>
+  <rule ref="DrupalPractice"/>
+  <file>web/modules/custom</file>
+  <file>web/themes/custom</file>
+  <exclude-pattern>*/tests/src/Unit/fixtures/*</exclude-pattern>
+  <exclude-pattern>*/css/*</exclude-pattern>
+  <arg name="extensions" value="php,module,inc,install,theme,yml"/>
+  <arg name="basepath" value="."/>
+  <arg name="colors"/>
+  <arg value="p"/>
+</ruleset>

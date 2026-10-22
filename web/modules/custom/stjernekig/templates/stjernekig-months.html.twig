@@ -1,0 +1,16 @@
+<nav class="apod-year-nav" aria-label="{{ 'Years'|t }}">
+  {% if prev_year %}<a href="{{ prev_year }}" rel="prev">← {{ year - 1 }}</a>{% endif %}
+  <span class="apod-year-nav__current">{{ year }}</span>
+  {% if next_year %}<a href="{{ next_year }}" rel="next">{{ year + 1 }} →</a>{% endif %}
+</nav>
+<ul class="apod-months">
+  {% for m in months %}
+    <li class="apod-months__item{{ m.url ? '' : ' apod-months__item--empty' }}">
+      {% if m.url %}
+        <a href="{{ m.url }}"><span class="apod-months__label">{{ m.label }}</span> <span class="apod-months__count">{{ m.count }}</span></a>
+      {% else %}
+        <span class="apod-months__label">{{ m.label }}</span>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

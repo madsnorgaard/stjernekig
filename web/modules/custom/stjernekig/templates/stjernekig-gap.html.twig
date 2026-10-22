@@ -1,0 +1,8 @@
+<section class="apod-gap">
+  <h2>{{ 'No picture on @date'|t({'@date': formatted_date}) }}</h2>
+  <p>{{ 'NASA did not publish an entry that day, or it has not been imported yet.'|t }}</p>
+  <nav class="apod-nav">
+    {% if prev %}<a class="apod-nav__prev" href="{{ prev.url }}"><span class="apod-nav__label">← {{ prev.date }}</span><span class="apod-nav__title">{{ prev.title }}</span></a>{% endif %}
+    {% if next %}<a class="apod-nav__next" href="{{ next.url }}"><span class="apod-nav__label">{{ next.date }} →</span><span class="apod-nav__title">{{ next.title }}</span></a>{% endif %}
+  </nav>
+</section>

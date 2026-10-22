@@ -1,0 +1,23 @@
+uuid: bf525880-9347-45f2-ac85-d0e2500c7674
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: '-rAOlvlu6442xV0dIOrybAYrD7shukZCM-z7SGSR2Rs'
+id: node.field_apod_copyrighted
+field_name: field_apod_copyrighted
+entity_type: node
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

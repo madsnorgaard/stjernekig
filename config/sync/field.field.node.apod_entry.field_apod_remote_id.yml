@@ -1,0 +1,28 @@
+uuid: e671c82e-d604-4ea7-9904-841b40d3c9de
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_apod_remote_id
+    - node.type.apod_entry
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: ZsI1KJy1f4LTMTr6AZp4oDNikKawLl-fhvXejVGg0do
+id: node.apod_entry.field_apod_remote_id
+field_name: field_apod_remote_id
+entity_type: node
+bundle: apod_entry
+label: 'Source ID'
+description: 'Post ID at the source.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

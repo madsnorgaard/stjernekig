@@ -1,0 +1,9 @@
+{#
+/**
+ * @file
+ * Page title. Empty on pages that carry their own heading (entries, latest).
+ */
+#}
+{% if title %}
+  <h1{{ title_attrs.addClass('page-title') }}>{{ title }}</h1>
+{% endif %}

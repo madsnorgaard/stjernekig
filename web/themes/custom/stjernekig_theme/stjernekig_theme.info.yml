@@ -1,0 +1,13 @@
+name: Stjernekig
+type: theme
+description: 'Dark-sky front-end for the Astronomy Picture of the Day archive.'
+package: Stjernekig
+core_version_requirement: ^11
+base theme: false
+libraries:
+  - stjernekig_theme/global
+regions:
+  header: Header
+  highlighted: Highlighted
+  content: Content
+  footer: Footer

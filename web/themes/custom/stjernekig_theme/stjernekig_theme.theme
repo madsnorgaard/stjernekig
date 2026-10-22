@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * @file
+ * Preprocess hooks for the Stjernekig theme.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_preprocess_HOOK() for html.
+ */
+function stjernekig_theme_preprocess_html(array &$variables): void {
+  $variables['attributes']['class'][] = 'stjernekig';
+  $variables['#attached']['html_head'][] = [
+    ['#tag' => 'meta', '#attributes' => ['name' => 'theme-color', 'content' => '#070b14']],
+    'stjernekig_theme_color',
+  ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page.
+ *
+ * Navigation is rendered by the theme itself, so no block placement is needed.
+ */
+function stjernekig_theme_preprocess_page(array &$variables): void {
+  $variables['site_name'] = \Drupal::config('system.site')->get('name');
+  $variables['site_tagline'] = \Drupal::config('stjernekig.settings')->get('archive.site_tagline');
+
+  $current = \Drupal::routeMatch()->getRouteName();
+  $items = [
+    'stjernekig.archive' => t('Latest'),
+    'stjernekig.years' => t('Archive'),
+    'stjernekig.on_this_day' => t('On this day'),
+    'stjernekig.random' => t('Random'),
+    'stjernekig.search' => t('Search'),
+  ];
+  $variables['nav'] = [];
+  foreach ($items as $routeName => $label) {
+    $variables['nav'][] = [
+      'label' => $label,
+      'url' => Url::fromRoute($routeName)->toString(),
+      'active' => $routeName === $current,
+    ];
+  }
+  $variables['feed_url'] = Url::fromRoute('stjernekig.feed')->toString();
+  $variables['home_url'] = Url::fromRoute('<front>')->toString();
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page_title.
+ *
+ * Entries and the front page render their own heading.
+ */
+function stjernekig_theme_preprocess_page_title(array &$variables): void {
+  $routeMatch = \Drupal::routeMatch();
+  $route = $routeMatch->getRouteName();
+  $node = $routeMatch->getParameter('node');
+  if ($route === 'stjernekig.archive' || ($route === 'entity.node.canonical' && $node instanceof NodeInterface && $node->bundle() === 'apod_entry')) {
+    $variables['title'] = NULL;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for node.
+ */
+function stjernekig_theme_preprocess_node(array &$variables): void {
+  $node = $variables['node'];
+  if ($node->bundle() !== 'apod_entry') {
+    return;
+  }
+  $date = (string) $node->get('field_apod_date')->value;
+  $variables['apod_date_iso'] = $date;
+  $variables['apod_date'] = $date ? (new \DateTimeImmutable($date))->format('j F Y') : '';
+  $variables['apod_media_type'] = (string) $node->get('field_apod_media_type')->value;
+  $variables['apod_url'] = $node->toUrl()->toString();
+}
