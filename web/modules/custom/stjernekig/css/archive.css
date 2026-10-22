@@ -1,0 +1,21 @@
+/* Theme-independent structure for the archive pages. Visual styling lives in the theme. */
+.apod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; list-style: none; margin: 0; padding: 0; }
+.apod-grid > li { margin: 0; }
+.apod-calendar { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.4rem; list-style: none; margin: 1rem 0; padding: 0; }
+.apod-calendar__weekday { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; text-align: center; }
+.apod-calendar__day { aspect-ratio: 1; position: relative; overflow: hidden; border-radius: 6px; background: rgba(127, 127, 127, 0.12); }
+.apod-calendar__day img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.apod-calendar__day a { display: block; height: 100%; }
+.apod-calendar__num { position: absolute; top: 0.3rem; left: 0.4rem; font-size: 0.8rem; font-weight: 600; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.apod-calendar__day--empty { opacity: 0.35; }
+.apod-nav { display: flex; justify-content: space-between; gap: 1rem; margin: 2rem 0; flex-wrap: wrap; }
+.apod-nav__prev, .apod-nav__next { max-width: 48%; }
+.apod-nav__next { margin-left: auto; text-align: right; }
+.apod-nav__label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; }
+.apod-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; list-style: none; padding: 0; }
+.apod-years { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; }
+.apod-video { aspect-ratio: 16 / 9; width: 100%; }
+.apod-video iframe { width: 100%; height: 100%; border: 0; }
+.apod-search-form { display: flex; gap: 0.5rem; margin: 1rem 0 2rem; }
+.apod-search-form input[type="search"] { flex: 1; }
+.apod-empty { opacity: 0.8; }

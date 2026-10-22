@@ -1,0 +1,27 @@
+uuid: 9144dd56-eeab-41f5-ae51-b48949ced249
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.tools
+  module:
+    - system
+  theme:
+    - stjernekig_theme
+_core:
+  default_config_hash: 21gTvrC3-X1nBOt2rLuxMV9LqgyW8pnzfKXMeq-dnPI
+id: stjernekig_theme_tools
+theme: stjernekig_theme
+region: header
+weight: 0
+provider: null
+plugin: 'system_menu_block:tools'
+settings:
+  id: 'system_menu_block:tools'
+  label: Tools
+  label_display: visible
+  provider: system
+  level: 1
+  depth: null
+  expand_all_items: false
+visibility: {  }

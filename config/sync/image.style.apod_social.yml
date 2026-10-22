@@ -1,0 +1,20 @@
+uuid: 04c67758-595e-4242-843c-a7181ba76af7
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: TY39swDxXfpB546c0bton7wN6FZniC9pHmjREMWyaWo
+name: apod_social
+label: 'APOD social card (1200x630)'
+effects:
+  c2e32c34-a8c8-4006-8ba6-0f69998f4c5d:
+    uuid: c2e32c34-a8c8-4006-8ba6-0f69998f4c5d
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 1200
+      height: 630
+      anchor: center-center

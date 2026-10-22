@@ -1,0 +1,9 @@
+global:
+  version: 1.x
+  css:
+    base:
+      css/base.css: {}
+    layout:
+      css/layout.css: {}
+    component:
+      css/components.css: {}

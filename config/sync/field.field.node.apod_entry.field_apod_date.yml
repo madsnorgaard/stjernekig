@@ -1,0 +1,26 @@
+uuid: abbc5412-3276-4473-b3b3-dbd2cdb6b5b1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_apod_date
+    - node.type.apod_entry
+  module:
+    - datetime
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: NX7XU9GUQRlc0--AzVfMNpj0XgjtFEeS648vLUc34y0
+id: node.apod_entry.field_apod_date
+field_name: field_apod_date
+entity_type: node
+bundle: apod_entry
+label: Date
+description: 'Publication date of the picture.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

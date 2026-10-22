@@ -1,0 +1,302 @@
+<?php
+
+/**
+ * @file
+ * Stjernekig: daily import and archive of NASA's Astronomy Picture of the Day.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+use Drupal\file\FileInterface;
+use Drupal\image\Entity\ImageStyle;
+use Drupal\node\NodeInterface;
+use Drupal\stjernekig\Importer\ApodImporter;
+
+/**
+ * Implements hook_cron().
+ *
+ * Queues today and yesterday (NASA publishes just after midnight US Eastern)
+ * plus any recent gaps. The queue worker skips dates that already exist.
+ */
+function stjernekig_cron(): void {
+  $config = \Drupal::config('stjernekig.settings');
+  $state = \Drupal::state();
+  $queue = \Drupal::queue('stjernekig_apod_import');
+  $lookback = max(1, (int) $config->get('cron.lookback_days'));
+
+  /** @var \Drupal\stjernekig\Archive\ArchiveRepository $archive */
+  $archive = \Drupal::service('stjernekig.archive');
+  /** @var \Drupal\stjernekig\Importer\ApodImporter $importer */
+  $importer = \Drupal::service('stjernekig.importer');
+
+  $today = date('Y-m-d');
+  $from = date('Y-m-d', strtotime("-$lookback days"));
+  $candidates = $archive->missingDates($from, $today);
+  $known = $importer->knownMissing();
+  // Re-check known-empty days only once a week; APOD occasionally backfills.
+  $candidates = array_filter($candidates, fn (string $d) => !isset($known[$d]) || $known[$d] < time() - 7 * 86400);
+
+  // Do not pile up duplicates if the source has been down for a while.
+  $recent = (array) $state->get('stjernekig.cron_queued', []);
+  $recent = array_filter($recent, fn (int $t) => $t > time() - 6 * 3600);
+  foreach ($candidates as $date) {
+    if (isset($recent[$date])) {
+      continue;
+    }
+    $queue->createItem(['date' => $date]);
+    $recent[$date] = time();
+  }
+  $state->set('stjernekig.cron_queued', $recent);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function stjernekig_theme(): array {
+  return [
+    'stjernekig_hero' => [
+      'variables' => [
+        'media_type' => 'image',
+        'image' => NULL,
+        'video_url' => NULL,
+        'remote_url' => NULL,
+        'title' => '',
+        'copyrighted' => FALSE,
+        'source_url' => NULL,
+      ],
+    ],
+    'stjernekig_meta' => [
+      'variables' => [
+        'date' => '',
+        'date_iso' => '',
+        'credit_label' => '',
+        'credit' => NULL,
+        'authors' => '',
+        'source_url' => '',
+        'legacy_url' => '',
+        'remote_url' => '',
+        'year_url' => '',
+        'month_url' => '',
+        'on_this_day_url' => '',
+      ],
+    ],
+    'stjernekig_navigation' => [
+      'variables' => ['prev' => NULL, 'next' => NULL, 'latest_url' => ''],
+    ],
+    'stjernekig_intro' => [
+      'variables' => ['title' => '', 'text' => ''],
+    ],
+    'stjernekig_years' => [
+      'variables' => ['years' => []],
+    ],
+    'stjernekig_months' => [
+      'variables' => ['months' => [], 'year' => 0, 'prev_year' => NULL, 'next_year' => NULL],
+    ],
+    'stjernekig_calendar' => [
+      'variables' => [
+        'year' => 0,
+        'month' => 0,
+        'month_label' => '',
+        'weekdays' => [],
+        'cells' => [],
+        'prev' => NULL,
+        'next' => NULL,
+        'year_url' => '',
+      ],
+    ],
+    'stjernekig_gap' => [
+      'variables' => ['date' => '', 'formatted_date' => '', 'prev' => NULL, 'next' => NULL],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function stjernekig_entity_extra_field_info(): array {
+  $extra = [];
+  $extra['node'][ApodImporter::BUNDLE]['display'] = [
+    'apod_hero' => [
+      'label' => t('Picture or video'),
+      'description' => t('The hero media, chosen by media type.'),
+      'weight' => 0,
+      'visible' => TRUE,
+    ],
+    'apod_meta' => [
+      'label' => t('Credit and details'),
+      'weight' => 2,
+      'visible' => TRUE,
+    ],
+    'apod_navigation' => [
+      'label' => t('Previous and next day'),
+      'weight' => 3,
+      'visible' => TRUE,
+    ],
+  ];
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view() for node.
+ */
+function stjernekig_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, string $view_mode): void {
+  if (!$entity instanceof NodeInterface || $entity->bundle() !== ApodImporter::BUNDLE) {
+    return;
+  }
+  $build['#attached']['library'][] = 'stjernekig/archive';
+  $date = (string) $entity->get('field_apod_date')->value;
+
+  if ($display->getComponent('apod_hero')) {
+    $image = NULL;
+    $file = $entity->get('field_apod_image')->entity;
+    if ($file instanceof FileInterface) {
+      $image = [
+        '#theme' => 'image_style',
+        '#style_name' => 'apod_hero',
+        '#uri' => $file->getFileUri(),
+        '#alt' => (string) ($entity->get('field_apod_image')->alt ?: $entity->label()),
+        '#attributes' => ['class' => ['apod-hero__img'], 'fetchpriority' => 'high'],
+      ];
+    }
+    $build['apod_hero'] = [
+      '#theme' => 'stjernekig_hero',
+      '#media_type' => (string) $entity->get('field_apod_media_type')->value,
+      '#image' => $image,
+      '#video_url' => $entity->get('field_apod_video_url')->value,
+      '#remote_url' => $entity->get('field_apod_remote_url')->value,
+      '#title' => (string) $entity->label(),
+      '#copyrighted' => (bool) $entity->get('field_apod_copyrighted')->value,
+      '#source_url' => $entity->get('field_apod_source_url')->value,
+      '#weight' => $display->getComponent('apod_hero')['weight'] ?? 0,
+    ];
+  }
+
+  if ($display->getComponent('apod_meta')) {
+    $credit = NULL;
+    if (!$entity->get('field_apod_credit')->isEmpty()) {
+      $credit = [
+        '#type' => 'processed_text',
+        '#text' => (string) $entity->get('field_apod_credit')->value,
+        '#format' => (string) ($entity->get('field_apod_credit')->format ?: 'apod_html'),
+      ];
+    }
+    $dt = new \DateTimeImmutable($date);
+    $build['apod_meta'] = [
+      '#theme' => 'stjernekig_meta',
+      '#date' => $dt->format('l j F Y'),
+      '#date_iso' => $date,
+      '#credit_label' => (string) $entity->get('field_apod_credit_label')->value,
+      '#credit' => $credit,
+      '#authors' => (string) $entity->get('field_apod_authors')->value,
+      '#source_url' => (string) $entity->get('field_apod_source_url')->value,
+      '#legacy_url' => (string) $entity->get('field_apod_legacy_url')->value,
+      '#remote_url' => (string) $entity->get('field_apod_remote_url')->value,
+      '#year_url' => Url::fromRoute('stjernekig.year', ['year' => $dt->format('Y')])->toString(),
+      '#month_url' => Url::fromRoute('stjernekig.month', ['year' => $dt->format('Y'), 'month' => $dt->format('m')])->toString(),
+      '#on_this_day_url' => Url::fromRoute('stjernekig.on_this_day', [], ['query' => ['date' => $dt->format('m-d')]])->toString(),
+      '#weight' => $display->getComponent('apod_meta')['weight'] ?? 2,
+    ];
+  }
+
+  if ($display->getComponent('apod_navigation') && $view_mode === 'full') {
+    /** @var \Drupal\stjernekig\Archive\ArchiveRepository $archive */
+    $archive = \Drupal::service('stjernekig.archive');
+    $neighbours = $archive->neighbours($date);
+    $link = static function (?NodeInterface $node): ?array {
+      if (!$node) {
+        return NULL;
+      }
+      return [
+        'url' => $node->toUrl()->toString(),
+        'title' => (string) $node->label(),
+        'date' => (new \DateTimeImmutable((string) $node->get('field_apod_date')->value))->format('j F Y'),
+      ];
+    };
+    $build['apod_navigation'] = [
+      '#theme' => 'stjernekig_navigation',
+      '#prev' => $link($neighbours['prev']),
+      '#next' => $link($neighbours['next']),
+      '#latest_url' => Url::fromRoute('stjernekig.archive')->toString(),
+      '#weight' => $display->getComponent('apod_navigation')['weight'] ?? 3,
+    ];
+    // Neighbours change when entries are added either side.
+    $build['#cache']['tags'][] = 'node_list:apod_entry';
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Social and search metadata for entry pages.
+ */
+function stjernekig_page_attachments(array &$attachments): void {
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (!$node instanceof NodeInterface || $node->bundle() !== ApodImporter::BUNDLE) {
+    return;
+  }
+  $explanation = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags((string) $node->get('field_apod_explanation')->value), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?? '');
+  if (mb_strlen($explanation) > 200) {
+    $explanation = rtrim(mb_substr($explanation, 0, mb_strrpos(mb_substr($explanation, 0, 200), ' ') ?: 200), ' ,;:.') . '…';
+  }
+  $url = $node->toUrl('canonical', ['absolute' => TRUE])->toString();
+  $tags = [
+    ['property', 'og:type', 'article'],
+    ['property', 'og:title', (string) $node->label()],
+    ['property', 'og:description', $explanation],
+    ['property', 'og:url', $url],
+    ['property', 'og:site_name', (string) \Drupal::config('system.site')->get('name')],
+    ['name', 'description', $explanation],
+    ['name', 'twitter:card', 'summary_large_image'],
+    ['property', 'article:published_time', (string) $node->get('field_apod_date')->value],
+  ];
+  $file = $node->get('field_apod_image')->entity;
+  if ($file instanceof FileInterface) {
+    $style = ImageStyle::load('apod_social');
+    if ($style) {
+      $tags[] = ['property', 'og:image', $style->buildUrl($file->getFileUri())];
+      $tags[] = ['property', 'og:image:width', '1200'];
+      $tags[] = ['property', 'og:image:height', '630'];
+    }
+  }
+  foreach ($tags as $i => [$attribute, $name, $content]) {
+    if ($content === '') {
+      continue;
+    }
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => [$attribute => $name, 'content' => $content],
+      ],
+      'stjernekig_meta_' . $i,
+    ];
+  }
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ *
+ * Advertise the feed on every page.
+ */
+function stjernekig_page_attachments_alter(array &$attachments): void {
+  $attachments['#attached']['html_head_link'][] = [
+    [
+      'rel' => 'alternate',
+      'type' => 'application/rss+xml',
+      'title' => (string) \Drupal::config('system.site')->get('name'),
+      'href' => Url::fromRoute('stjernekig.feed', [], ['absolute' => TRUE])->toString(),
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for node.
+ */
+function stjernekig_theme_suggestions_node_alter(array &$suggestions, array $variables): void {
+  $node = $variables['elements']['#node'] ?? NULL;
+  if ($node instanceof NodeInterface && $node->bundle() === ApodImporter::BUNDLE) {
+    $suggestions[] = 'node__apod_entry__' . $variables['elements']['#view_mode'];
+  }
+}

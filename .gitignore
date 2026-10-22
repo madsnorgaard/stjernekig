@@ -1,68 +1,57 @@
-# Secrets and local overrides
+# Environment and local overrides
 .env
 docker-compose.override.yml
+settings.local.php
 
-# Docker volumes (Drupal files, DB)
-docker-volumes/*
+# Runtime data created by the containers
+data/
+backups/
+web/sites/default/files/
 
-# DB dumps
-*.sql
-*.sql.gz
+# Composer-managed code
+vendor/
+web/core/
+web/libraries/
+web/modules/contrib/
+web/themes/contrib/
+web/profiles/contrib/
+drush/Commands/contrib/
 
-# Composer-installed dependencies
-site/vendor/
-
-# Drupal scaffold (these are managed by drupal/core-composer-scaffold)
+# Scaffolded by drupal/core-composer-scaffold
 .editorconfig
 .gitattributes
+web/.csslintrc
+web/.eslintignore
+web/.eslintrc.json
+web/.ht.router.php
+web/.htaccess
+web/INSTALL.txt
+web/README.md
+web/autoload.php
+web/example.gitignore
+web/index.php
+web/robots.txt
+web/update.php
+web/web.config
+web/modules/README.txt
+web/profiles/README.txt
+web/themes/README.txt
+web/sites/README.txt
+web/sites/default/default.services.yml
+web/sites/default/default.settings.php
+web/sites/default/settings.php
+web/sites/development.services.yml
+web/sites/example.settings.local.php
+web/sites/example.sites.php
 
-# Drupal core
-site/web/core/
-
-# Root core files (shipped by scaffold)
-site/web/.*
-site/web/*.txt
-site/web/*.php
-site/web/web.config
-site/web/example.gitignore
-
-# Contrib modules / themes / profiles / libraries (these come from composer)
-site/web/libraries
-site/web/modules/README.txt
-site/web/modules/contrib/
-site/web/profiles/README.txt
-site/web/profiles/contrib/
-site/web/themes/README.txt
-site/web/themes/contrib/
-site/drush/Commands/contrib/
-
-# Sites files
-site/web/sites/README.txt
-site/web/sites/default/default*
-site/web/sites/default/files
-site/web/sites/example*
-site/web/sites/development.services.yml
-
-# Default site settings.php is mounted from docker-configs/, not committed
-site/web/sites/default/settings.php
-site/web/sites/default/settings.local.php
-site/web/sites/default/services.yml
-
-# drupal-check / simpletest
-site/web/sites/simpletest
-
-# Node
-node_modules
-
-# Unit test
-site/.phpunit.result.cache
+# Tooling
+.phpunit.cache/
+.phpunit.result.cache
+web/sites/simpletest/
+node_modules/
 
 # OS
 .DS_Store
 
-# Mads's notes/drafts pattern — these belong in ~/Notes/stjernekig/, never in the repo
-*-til-sune.md
-*-email-*.md
-*-hosting-notes.md
-*-draft.md
-*-notes.md
+# Scaffolded recipes README
+recipes/README.txt

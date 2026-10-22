@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * One entry, in full.
+ */
+#}
+<article{{ attributes.addClass('apod-entry') }}>
+  <header class="apod-entry__header">
+    <p class="apod-entry__date"><time datetime="{{ apod_date_iso }}">{{ apod_date }}</time></p>
+    <h1 class="apod-entry__title">{{ label }}</h1>
+  </header>
+  {{ content.apod_hero }}
+  <div class="apod-entry__body">
+    <div class="apod-entry__explanation">
+      {{ content.field_apod_explanation }}
+    </div>
+    <aside class="apod-entry__aside">
+      {{ content.apod_meta }}
+    </aside>
+  </div>
+  {{ content|without('apod_hero', 'field_apod_explanation', 'apod_meta', 'apod_navigation') }}
+  {{ content.apod_navigation }}
+</article>

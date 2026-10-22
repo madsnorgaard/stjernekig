@@ -1,0 +1,29 @@
+uuid: 8afc0592-6d71-4688-a341-761075ad0eb9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_apod_credit
+    - filter.format.apod_html
+    - node.type.apod_entry
+  module:
+    - text
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: aBxMRRkiFzIv_mVpLItEGauq56nzOWQ8GIg8TNyOWe4
+id: node.apod_entry.field_apod_credit
+field_name: field_apod_credit
+entity_type: node
+bundle: apod_entry
+label: Credit
+description: 'Credit and copyright line, may contain links.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - apod_html
+field_type: text_long

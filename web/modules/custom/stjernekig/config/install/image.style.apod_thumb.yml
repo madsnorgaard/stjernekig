@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+    - stjernekig
+name: apod_thumb
+label: APOD calendar thumbnail (240x240)
+effects:
+  d1897416-9d84-4895-8947-b8528851f375:
+    uuid: d1897416-9d84-4895-8947-b8528851f375
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 240
+      height: 240
+      anchor: center-center

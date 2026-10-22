@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Previous / next day links under an entry.
+ */
+#}
+<nav class="apod-nav" aria-label="{{ 'Previous and next picture'|t }}">
+  {% if prev %}
+    <a class="apod-nav__prev" href="{{ prev.url }}" rel="prev">
+      <span class="apod-nav__label">← {{ prev.date }}</span>
+      <span class="apod-nav__title">{{ prev.title }}</span>
+    </a>
+  {% endif %}
+  {% if next %}
+    <a class="apod-nav__next" href="{{ next.url }}" rel="next">
+      <span class="apod-nav__label">{{ next.date }} →</span>
+      <span class="apod-nav__title">{{ next.title }}</span>
+    </a>
+  {% else %}
+    <a class="apod-nav__next" href="{{ latest_url }}">
+      <span class="apod-nav__label">{{ 'Latest'|t }} →</span>
+      <span class="apod-nav__title">{{ 'This is the newest picture'|t }}</span>
+    </a>
+  {% endif %}
+</nav>

@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+    - stjernekig
+name: apod_hero
+label: APOD hero (max 1800 wide)
+effects:
+  af1d3291-244b-4da8-aed3-a3ad1643dff4:
+    uuid: af1d3291-244b-4da8-aed3-a3ad1643dff4
+    id: image_scale
+    weight: 1
+    data:
+      width: 1800
+      height: null
+      upscale: false

@@ -1,0 +1,24 @@
+uuid: de4a48ce-11a6-4062-bd1b-7c808b5ec75c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_apod_credit_label
+    - node.type.apod_entry
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: v5IHszTm-5P7_dlXdLsWyKQasNAj2I1D2yBksj1fg4A
+id: node.apod_entry.field_apod_credit_label
+field_name: field_apod_credit_label
+entity_type: node
+bundle: apod_entry
+label: 'Credit label'
+description: 'The label NASA used for the credit line, e.g. "Image Credit & Copyright".'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

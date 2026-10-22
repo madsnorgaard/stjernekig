@@ -1,0 +1,28 @@
+uuid: 9d2304b2-a3e8-4a29-88e2-4f46e2e52050
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_apod_media_type
+    - node.type.apod_entry
+  module:
+    - options
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: '-IvT18XEX-H7nsXIEI7C7XMTlASRKcarew05ATBAtMg'
+id: node.apod_entry.field_apod_media_type
+field_name: field_apod_media_type
+entity_type: node
+bundle: apod_entry
+label: 'Media type'
+description: ''
+required: true
+translatable: false
+default_value:
+  -
+    value: image
+default_value_callback: ''
+settings: {  }
+field_type: list_string

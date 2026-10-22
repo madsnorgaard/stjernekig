@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+  - field.storage.node.field_apod_explanation
+  - node.type.apod_entry
+  - filter.format.apod_html
+  module:
+  - text
+  enforced:
+    module:
+    - stjernekig
+id: node.apod_entry.field_apod_explanation
+field_name: field_apod_explanation
+entity_type: node
+bundle: apod_entry
+label: Explanation
+description: The explanation written by the APOD editors.
+required: false
+translatable: false
+default_value: []
+default_value_callback: ''
+settings:
+  allowed_formats:
+  - apod_html
+field_type: text_long

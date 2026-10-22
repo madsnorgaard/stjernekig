@@ -1,0 +1,45 @@
+stjernekig.archive:
+  title: 'Latest'
+  description: 'The most recent Astronomy Pictures of the Day.'
+  route_name: stjernekig.archive
+  menu_name: main
+  weight: 0
+
+stjernekig.years:
+  title: 'Archive'
+  description: 'Browse by year and month.'
+  route_name: stjernekig.years
+  menu_name: main
+  weight: 1
+
+stjernekig.on_this_day:
+  title: 'On this day'
+  description: 'Every picture published on today''s date, across the years.'
+  route_name: stjernekig.on_this_day
+  menu_name: main
+  weight: 2
+
+stjernekig.random:
+  title: 'Random'
+  description: 'Jump to a random picture.'
+  route_name: stjernekig.random
+  menu_name: main
+  weight: 3
+
+stjernekig.search:
+  title: 'Search'
+  route_name: stjernekig.search
+  menu_name: main
+  weight: 4
+
+stjernekig.settings:
+  title: 'Stjernekig'
+  description: 'Source, media and archive settings for the APOD importer.'
+  route_name: stjernekig.settings
+  parent: system.admin_config_services
+
+stjernekig.report:
+  title: 'Stjernekig archive status'
+  description: 'Import coverage, gaps and queue state for the APOD archive.'
+  route_name: stjernekig.report
+  parent: system.admin_reports

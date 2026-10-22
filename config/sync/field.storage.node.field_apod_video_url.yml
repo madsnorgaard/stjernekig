@@ -1,0 +1,26 @@
+uuid: 0f6caeb3-ba87-4916-930a-8c226ba2d4e6
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: DuWV1g0WDz3AnRzMgvo-V2HD5Aa_4N90P7-PPcn-el8
+id: node.field_apod_video_url
+field_name: field_apod_video_url
+entity_type: node
+type: string
+settings:
+  max_length: 1024
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

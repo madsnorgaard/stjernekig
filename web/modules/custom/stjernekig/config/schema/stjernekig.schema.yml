@@ -1,0 +1,53 @@
+stjernekig.settings:
+  type: config_object
+  label: 'Stjernekig settings'
+  mapping:
+    source:
+      type: mapping
+      label: 'Source'
+      mapping:
+        base_url:
+          type: string
+          label: 'Base URL of the WordPress site that publishes APOD'
+        category_id:
+          type: integer
+          label: 'WordPress category ID of the APOD image articles'
+        request_delay_ms:
+          type: integer
+          label: 'Pause between consecutive requests during bulk imports (milliseconds)'
+        timeout:
+          type: integer
+          label: 'HTTP timeout in seconds'
+    media:
+      type: mapping
+      label: 'Media'
+      mapping:
+        store_copyrighted:
+          type: boolean
+          label: 'Download pictures whose credit line carries a copyright notice'
+        max_bytes:
+          type: integer
+          label: 'Largest media file to download, in bytes'
+    archive:
+      type: mapping
+      label: 'Archive'
+      mapping:
+        start_date:
+          type: string
+          label: 'First date in the archive (YYYY-MM-DD)'
+        items_per_page:
+          type: integer
+          label: 'Entries per page on listing pages'
+        feed_items:
+          type: integer
+          label: 'Entries in the RSS feed'
+        site_tagline:
+          type: label
+          label: 'Tagline shown on the front page and in the feed'
+    cron:
+      type: mapping
+      label: 'Cron'
+      mapping:
+        lookback_days:
+          type: integer
+          label: 'How many recent days cron re-checks for missing entries'

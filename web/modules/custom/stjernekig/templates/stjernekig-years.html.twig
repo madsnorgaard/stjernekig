@@ -1,0 +1,5 @@
+<ul class="apod-years">
+  {% for y in years %}
+    <li><a class="apod-years__item" href="{{ y.url }}"><span class="apod-years__year">{{ y.year }}</span> <span class="apod-years__count">{{ y.count }}</span></a></li>
+  {% endfor %}
+</ul>

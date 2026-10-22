@@ -1,0 +1,15 @@
+source:
+  base_url: https://science.nasa.gov
+  category_id: 22766
+  request_delay_ms: 250
+  timeout: 30
+media:
+  store_copyrighted: true
+  max_bytes: 52428800
+archive:
+  start_date: '1995-06-16'
+  items_per_page: 24
+  feed_items: 20
+  site_tagline: A daily mirror and complete archive of NASA's Astronomy Picture of the Day.
+cron:
+  lookback_days: 14

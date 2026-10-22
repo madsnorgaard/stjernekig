@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+    - stjernekig
+name: APOD entry
+type: apod_entry
+description: One day's Astronomy Picture of the Day, imported from NASA.
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

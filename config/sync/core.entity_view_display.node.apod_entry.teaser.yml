@@ -1,0 +1,71 @@
+uuid: 035f6096-b4ac-4246-808b-5b4d73edc97d
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.apod_entry.field_apod_authors
+    - field.field.node.apod_entry.field_apod_copyrighted
+    - field.field.node.apod_entry.field_apod_credit
+    - field.field.node.apod_entry.field_apod_credit_label
+    - field.field.node.apod_entry.field_apod_date
+    - field.field.node.apod_entry.field_apod_explanation
+    - field.field.node.apod_entry.field_apod_image
+    - field.field.node.apod_entry.field_apod_legacy_url
+    - field.field.node.apod_entry.field_apod_media_type
+    - field.field.node.apod_entry.field_apod_remote_id
+    - field.field.node.apod_entry.field_apod_remote_url
+    - field.field.node.apod_entry.field_apod_source_url
+    - field.field.node.apod_entry.field_apod_video_url
+    - image.style.apod_card
+    - node.type.apod_entry
+  module:
+    - datetime
+    - image
+    - user
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: Pmm212Yswy1F2Xy2Zjok3IgaFy-0sXmcwEMoP2IO9G0
+id: node.apod_entry.teaser
+targetEntityType: node
+bundle: apod_entry
+mode: teaser
+content:
+  field_apod_date:
+    type: datetime_default
+    label: hidden
+    settings:
+      timezone_override: ''
+      format_type: apod_long
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_apod_image:
+    type: image
+    label: hidden
+    settings:
+      image_link: ''
+      image_style: apod_card
+      image_loading:
+        attribute: lazy
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  apod_hero: true
+  apod_meta: true
+  apod_navigation: true
+  field_apod_authors: true
+  field_apod_copyrighted: true
+  field_apod_credit: true
+  field_apod_credit_label: true
+  field_apod_explanation: true
+  field_apod_legacy_url: true
+  field_apod_media_type: true
+  field_apod_remote_id: true
+  field_apod_remote_url: true
+  field_apod_source_url: true
+  field_apod_video_url: true
+  links: true

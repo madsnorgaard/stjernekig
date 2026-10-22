@@ -1,0 +1,4 @@
+administer stjernekig:
+  title: 'Administer Stjernekig'
+  description: 'Change importer settings and view the archive status report.'
+  restrict access: true

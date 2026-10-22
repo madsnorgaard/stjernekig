@@ -1,0 +1,14 @@
+# Local development overrides: publish a port, skip Traefik.
+# Usage: scripts/dev.sh up -d   (wraps docker compose with both files)
+services:
+  drupal:
+    ports:
+      - "${HTTP_PORT:-8095}:80"
+    labels:
+      - "traefik.enable=false"
+    volumes:
+      # Writable in development so drush cex can update config/sync.
+      - ./config:/opt/drupal/config
+      - ./web/modules/custom:/opt/drupal/web/modules/custom
+      - ./web/themes/custom:/opt/drupal/web/themes/custom
+      - ./docker/php-dev.ini:/usr/local/etc/php/conf.d/zz-zz-dev.ini:ro

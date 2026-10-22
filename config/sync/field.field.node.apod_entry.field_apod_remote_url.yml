@@ -1,0 +1,24 @@
+uuid: 4dd52e34-bd4c-4e99-8270-d65787f650a3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_apod_remote_url
+    - node.type.apod_entry
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: ZijJm-5Z6NK1PQXXWoC3Ig9Uc5vRAb_dC3OmoS4HNNs
+id: node.apod_entry.field_apod_remote_url
+field_name: field_apod_remote_url
+entity_type: node
+bundle: apod_entry
+label: 'Original media URL'
+description: 'Full resolution asset on NASAs servers.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

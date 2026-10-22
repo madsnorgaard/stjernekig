@@ -1,0 +1,24 @@
+uuid: c8b10bcd-9a5f-48ef-9131-00f3ae0cbfa7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_apod_source_url
+    - node.type.apod_entry
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: dcmUGrwRCdMGtRme2AGY9_rQoAmUguOZSsJK7ewRHx0
+id: node.apod_entry.field_apod_source_url
+field_name: field_apod_source_url
+entity_type: node
+bundle: apod_entry
+label: 'Source page'
+description: 'The entry on science.nasa.gov.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

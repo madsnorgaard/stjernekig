@@ -1,0 +1,10 @@
+# phpstan-drupal and the deprecation rules register themselves through
+# phpstan/extension-installer.
+parameters:
+    level: 5
+    paths:
+        - web/modules/custom
+        - web/themes/custom
+    excludePaths:
+        - */tests/src/Unit/fixtures/*
+    treatPhpDocTypesAsCertain: false

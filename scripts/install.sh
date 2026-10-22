@@ -1,70 +1,47 @@
 #!/usr/bin/env bash
-#
-# Stjernekig — first-run installer.
-#
-# - Copies .env.dist to .env if missing
-# - Installs composer dependencies
-# - Runs `drush site-install` against an empty DB
-# - Enables the stjernekig + admin_toolbar modules
-# - Seeds the last 10 days of APOD
-
+# First-time local install: builds the image, installs Drupal from the exported
+# configuration in config/sync and imports the last week of pictures.
 set -euo pipefail
-
 cd "$(dirname "$0")/.."
 
 if [ ! -f .env ]; then
-  cp .env.dist .env
-  echo "Copied .env.dist → .env"
+  cp .env.example .env
+  echo "Created .env from .env.example. Edit it if you want different ports or passwords."
 fi
-
-# Eksponent local convention: .docker domains resolve via /etc/hosts.
-if ! getent hosts stjernekig.docker >/dev/null 2>&1; then
-  echo
-  echo "  ⚠  stjernekig.docker is not in /etc/hosts."
-  echo "      Add it once with:"
-  echo "        sudo sh -c 'echo \"127.0.0.1 stjernekig.docker\" >> /etc/hosts'"
-  echo "      Then re-run this script."
-  echo
-  exit 1
-fi
-
-# Get a real NASA API key from https://api.nasa.gov/ — DEMO_KEY is rate-limited to 30/hour.
-if grep -q "NASA_API_KEY=DEMO_KEY" .env 2>/dev/null; then
-  echo "  ℹ  Using DEMO_KEY for NASA APOD (30 requests/hour). For real demos, set NASA_API_KEY in .env."
-fi
-
 # shellcheck disable=SC1091
-set -a
-source .env
-set +a
+set -a; source .env; set +a
 
-echo "→ Bringing up the stack"
-docker compose up -d
+mkdir -p web/sites/default/files data/private backups
 
-echo "→ Waiting for MySQL to accept connections"
-until docker compose exec -T db mysqladmin ping -h"127.0.0.1" --silent >/dev/null 2>&1; do
-  sleep 1
+echo "→ Building and starting the stack"
+scripts/dev.sh up -d --build
+
+echo "→ Waiting for the database"
+for _ in $(seq 1 60); do
+  if scripts/dev.sh exec -T stjernekig_db healthcheck.sh --connect --innodb_initialized >/dev/null 2>&1; then break; fi
+  sleep 2
 done
 
-echo "→ composer install"
-docker compose exec -T -w /var/www/site php composer install --prefer-dist --no-interaction --no-ansi
+DRUSH="scripts/dev.sh exec -T -u www-data drupal vendor/bin/drush"
 
-echo "→ drush site-install (DB config comes from settings.php via env vars — no --db-url)"
-docker compose exec -T php drush site-install standard \
-  --site-name='Stjernekig' \
-  --account-name=admin \
-  --account-pass=admin \
-  -y
-
-echo "→ Enabling stjernekig + admin_toolbar"
-docker compose exec -T php drush en stjernekig admin_toolbar admin_toolbar_tools -y
+if $DRUSH status --field=bootstrap 2>/dev/null | grep -q Successful; then
+  echo "→ Drupal is already installed; importing configuration instead"
+  $DRUSH cim -y
+else
+  echo "→ Installing Drupal from config/sync"
+  $DRUSH site:install --existing-config -y \
+    --account-name=admin \
+    --account-pass="${ADMIN_PASSWORD:-admin}" \
+    --account-mail="admin@${DOMAIN_NAME:-stjernekig.localhost}"
+fi
 
 echo "→ Fixing file permissions"
-docker compose exec -T php bash -c 'mkdir -p /var/www/site/web/sites/default/files /var/www/private-files /var/www/temp-files && chown -R www-data:www-data /var/www/site/web/sites/default/files /var/www/private-files /var/www/temp-files && chmod -R 775 /var/www/site/web/sites/default/files /var/www/private-files /var/www/temp-files'
+scripts/dev.sh exec -T -u root drupal chown -R www-data:www-data /opt/drupal/web/sites/default/files /opt/drupal/private
 
-echo "→ Seeding the last 10 days of APOD"
-./scripts/seed.sh
+echo "→ Importing the last 7 days"
+$DRUSH stjernekig:import 7 || echo "   (import failed - is the source reachable? Retry with: $DRUSH stjernekig:import 7)"
 
 echo
-echo "Done. Open https://stjernekig.docker/apod"
-echo "Admin login: admin / admin (or run: docker compose exec php drush uli)"
+echo "Done. Open http://localhost:${HTTP_PORT:-8095}/"
+echo "Admin: admin / ${ADMIN_PASSWORD:-admin}   or   $DRUSH uli"
+echo "Whole archive since 1995:   $DRUSH stjernekig:backfill"

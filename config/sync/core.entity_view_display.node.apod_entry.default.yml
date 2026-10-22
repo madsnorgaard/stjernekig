@@ -1,0 +1,68 @@
+uuid: 4d6b8f17-42be-40fd-bf76-d8813da5931a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.apod_entry.field_apod_authors
+    - field.field.node.apod_entry.field_apod_copyrighted
+    - field.field.node.apod_entry.field_apod_credit
+    - field.field.node.apod_entry.field_apod_credit_label
+    - field.field.node.apod_entry.field_apod_date
+    - field.field.node.apod_entry.field_apod_explanation
+    - field.field.node.apod_entry.field_apod_image
+    - field.field.node.apod_entry.field_apod_legacy_url
+    - field.field.node.apod_entry.field_apod_media_type
+    - field.field.node.apod_entry.field_apod_remote_id
+    - field.field.node.apod_entry.field_apod_remote_url
+    - field.field.node.apod_entry.field_apod_source_url
+    - field.field.node.apod_entry.field_apod_video_url
+    - node.type.apod_entry
+  module:
+    - text
+    - user
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: SCtIwYkiWYP-Dggp1Ug-UbuKahO3witXCLiXGESDvxU
+id: node.apod_entry.default
+targetEntityType: node
+bundle: apod_entry
+mode: default
+content:
+  apod_hero:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  apod_meta:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  apod_navigation:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_apod_explanation:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden:
+  field_apod_authors: true
+  field_apod_copyrighted: true
+  field_apod_credit: true
+  field_apod_credit_label: true
+  field_apod_date: true
+  field_apod_image: true
+  field_apod_legacy_url: true
+  field_apod_media_type: true
+  field_apod_remote_id: true
+  field_apod_remote_url: true
+  field_apod_source_url: true
+  field_apod_video_url: true
+  links: true

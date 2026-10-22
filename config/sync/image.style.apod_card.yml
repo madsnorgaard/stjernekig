@@ -1,0 +1,20 @@
+uuid: d5f1dd85-ad94-41fa-b301-4d3ad15928ea
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - stjernekig
+_core:
+  default_config_hash: 4d2Dc5bg36V5SihN3ZIuXw0xiEcEH0pRMQ0uBSADIvw
+name: apod_card
+label: 'APOD card (640x480)'
+effects:
+  9f90c704-9913-4b4c-b909-02b056f0d6c2:
+    uuid: 9f90c704-9913-4b4c-b909-02b056f0d6c2
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 640
+      height: 480
+      anchor: center-center

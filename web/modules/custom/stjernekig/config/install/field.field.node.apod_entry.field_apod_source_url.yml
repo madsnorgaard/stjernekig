@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+  - field.storage.node.field_apod_source_url
+  - node.type.apod_entry
+  enforced:
+    module:
+    - stjernekig
+id: node.apod_entry.field_apod_source_url
+field_name: field_apod_source_url
+entity_type: node
+bundle: apod_entry
+label: Source page
+description: The entry on science.nasa.gov.
+required: false
+translatable: false
+default_value: []
+default_value_callback: ''
+settings: {}
+field_type: string

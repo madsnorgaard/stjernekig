@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Credit line and details for one entry.
+ */
+#}
+<dl class="apod-meta">
+  <div class="apod-meta__row">
+    <dt>{{ 'Date'|t }}</dt>
+    <dd><time datetime="{{ date_iso }}">{{ date }}</time>
+      <span class="apod-meta__links">· <a href="{{ month_url }}">{{ 'month'|t }}</a> · <a href="{{ year_url }}">{{ 'year'|t }}</a> · <a href="{{ on_this_day_url }}">{{ 'on this day'|t }}</a></span>
+    </dd>
+  </div>
+  {% if credit %}
+    <div class="apod-meta__row">
+      <dt>{{ credit_label ?: 'Credit'|t }}</dt>
+      <dd>{{ credit }}</dd>
+    </div>
+  {% endif %}
+  {% if authors %}
+    <div class="apod-meta__row">
+      <dt>{{ 'Authors and editors'|t }}</dt>
+      <dd>{{ authors }}</dd>
+    </div>
+  {% endif %}
+  <div class="apod-meta__row">
+    <dt>{{ 'Source'|t }}</dt>
+    <dd>
+      {% if source_url %}<a href="{{ source_url }}" rel="noopener">science.nasa.gov</a>{% endif %}
+      {% if legacy_url %} · <a href="{{ legacy_url }}" rel="noopener">apod.nasa.gov</a>{% endif %}
+      {% if remote_url %} · <a href="{{ remote_url }}" rel="noopener">{{ 'original file'|t }}</a>{% endif %}
+    </dd>
+  </div>
+</dl>

@@ -1,0 +1,24 @@
+<nav class="apod-year-nav" aria-label="{{ 'Months'|t }}">
+  {% if prev %}<a href="{{ prev.url }}" rel="prev">← {{ prev.label }}</a>{% endif %}
+  <a class="apod-year-nav__current" href="{{ year_url }}">{{ month_label }}</a>
+  {% if next %}<a href="{{ next.url }}" rel="next">{{ next.label }} →</a>{% endif %}
+</nav>
+<ol class="apod-calendar" aria-label="{{ month_label }}">
+  {% for day in weekdays %}
+    <li class="apod-calendar__weekday" aria-hidden="true">{{ day }}</li>
+  {% endfor %}
+  {% for cell in cells %}
+    {% if cell is null %}
+      <li class="apod-calendar__pad" aria-hidden="true"></li>
+    {% elseif cell.url %}
+      <li class="apod-calendar__day">
+        <a href="{{ cell.url }}" title="{{ cell.title }}">
+          {% if cell.image %}{{ cell.image }}{% endif %}
+          <span class="apod-calendar__num">{{ cell.day }}</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="apod-calendar__day apod-calendar__day--empty"><span class="apod-calendar__num">{{ cell.day }}</span></li>
+    {% endif %}
+  {% endfor %}
+</ol>

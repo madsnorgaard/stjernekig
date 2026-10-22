@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Page layout: masthead, navigation, content, footer.
+ */
+#}
+<a href="#main" class="visually-hidden focusable skip-link">{{ 'Skip to main content'|t }}</a>
+<header class="masthead">
+  <div class="masthead__inner">
+    <a class="brand" href="{{ home_url }}" rel="home">
+      <span class="brand__mark" aria-hidden="true">✦</span>
+      <span class="brand__name">{{ site_name }}</span>
+    </a>
+    <nav class="nav" aria-label="{{ 'Main navigation'|t }}">
+      {% for item in nav %}
+        <a href="{{ item.url }}"{% if item.active %} aria-current="page"{% endif %}>{{ item.label }}</a>
+      {% endfor %}
+      <a class="nav__feed" href="{{ feed_url }}" title="{{ 'RSS feed'|t }}">RSS</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="main" tabindex="-1">
+  {{ page.highlighted }}
+  {{ page.content }}
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <p>{{ site_tagline }}</p>
+    <p>{{ 'Pictures and texts are the work of NASA and the credited photographers, published by the Astronomy Picture of the Day editors. This archive is an independent mirror and is not affiliated with NASA.'|t }}</p>
+    <p><a href="https://science.nasa.gov/apod/" rel="noopener">science.nasa.gov/apod</a> · <a href="{{ feed_url }}">{{ 'RSS'|t }}</a> · <a href="https://github.com/madsnorgaard/stjernekig" rel="noopener">{{ 'Source code'|t }}</a></p>
+  </div>
+</footer>

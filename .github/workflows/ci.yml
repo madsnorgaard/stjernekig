@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  quality:
+    name: Lint, analyse, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Validate composer files
+        run: composer validate --strict --no-check-publish
+
+      - name: Cache Composer packages
+        uses: actions/cache@v5
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Audit dependencies
+        run: composer audit
+
+      - name: PHP CodeSniffer
+        run: vendor/bin/phpcs
+
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --no-progress
+
+      - name: PHPUnit
+        run: vendor/bin/phpunit --testsuite unit
+
+  image:
+    name: Build image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build the production image
+        run: docker build -f docker/Dockerfile -t stjernekig:ci .
+
+      - name: Smoke test
+        run: |
+          docker run --rm stjernekig:ci php -v
+          docker run --rm stjernekig:ci vendor/bin/drush --version
+          docker run --rm stjernekig:ci test -f web/modules/custom/stjernekig/stjernekig.info.yml
+
+  deploy:
+    name: Deploy to production
+    needs: [quality, image]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the infrastructure deploy workflow
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.DEPLOY_TOKEN }}
+          repository: madsnorgaard/contabo-infrastructure
+          event-type: deploy
+          client-payload: |
+            {
+              "project_dir": "stjernekig",
+              "project_type": "drupal",
+              "drupal_service": "drupal",
+              "run_updb": "true"
+            }
