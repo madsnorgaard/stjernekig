@@ -40,6 +40,9 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     image: stjernekig:latest
+    # Built here, never published: 'docker compose pull' skips it (verified
+    # with compose 2.35), 'up' builds it when missing.
+    pull_policy: build
     restart: always
     env_file:
       - .env
