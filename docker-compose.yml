@@ -76,6 +76,9 @@ services:
   cron:
     container_name: stjernekig_cron
     image: stjernekig:latest
+    # Built locally by the drupal service, never published to a registry, so
+    # `docker compose pull` (run by the deploy pipeline) must skip it.
+    pull_policy: never
     restart: always
     env_file:
       - .env
