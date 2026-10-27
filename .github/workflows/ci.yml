@@ -64,7 +64,9 @@ jobs:
   deploy:
     name: Deploy to production
     needs: [quality, image]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Set repository variable DEPLOY_ENABLED=true once the site is hosted on VPS2 (contabo-infrastructure#1298)
+    # and the DEPLOY_TOKEN secret is present. Until then the job is skipped instead of failing.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger the infrastructure deploy workflow
