@@ -6,6 +6,8 @@ source:
 media:
   store_copyrighted: true
   max_bytes: 52428800
+  store_videos: true
+  video_max_bytes: 209715200
 archive:
   start_date: '1995-06-16'
   items_per_page: 24

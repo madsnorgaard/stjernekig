@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\stjernekig\Client;
 
+use Drupal\stjernekig\Media\VideoSource;
+
 /**
  * Turns a WordPress "image-article" REST item into an ApodEntry.
  *
@@ -97,7 +99,7 @@ final class ApodParser {
   }
 
   /**
-   * Find the hero media: a YouTube/Vimeo embed or the full resolution image.
+   * Find the hero media: an embed, a self-hosted video file, or the image.
    *
    * @return array{0: string, 1: ?string, 2: ?string}
    *   Media type, image URL, video URL.
@@ -116,6 +118,13 @@ final class ApodParser {
     if (($imageUrl === NULL || self::isPlaceholder($imageUrl)) && $featuredImageUrl !== '' && !self::isPlaceholder($featuredImageUrl)) {
       $imageUrl = self::stripQuery($featuredImageUrl);
     }
+    // Self-hosted video days carry their still as the player's poster.
+    if (($imageUrl === NULL || self::isPlaceholder($imageUrl)) && preg_match('/<video[^>]+poster="([^"]+)"/i', $hero, $m)) {
+      $poster = self::stripQuery(html_entity_decode($m[1]));
+      if (!self::isPlaceholder($poster)) {
+        $imageUrl = $poster;
+      }
+    }
     if ($imageUrl !== NULL && self::isPlaceholder($imageUrl)) {
       $imageUrl = NULL;
     }
@@ -128,9 +137,12 @@ final class ApodParser {
       if (preg_match('#^https?://(www\.)?(youtube(-nocookie)?\.com|youtu\.be|player\.vimeo\.com|vimeo\.com)/#i', $videoUrl)) {
         return [ApodEntry::MEDIA_VIDEO, $imageUrl, self::normaliseVideoUrl($videoUrl)];
       }
+      if (VideoSource::isFileUrl($videoUrl)) {
+        return [ApodEntry::MEDIA_VIDEO, $imageUrl, self::stripQuery($videoUrl)];
+      }
     }
     if (preg_match('/<video[^>]*>.*?<source[^>]+src="([^"]+)"/is', $hero, $m) || preg_match('/<video[^>]+src="([^"]+)"/i', $hero, $m)) {
-      return [ApodEntry::MEDIA_VIDEO, $imageUrl, html_entity_decode($m[1])];
+      return [ApodEntry::MEDIA_VIDEO, $imageUrl, self::stripQuery(html_entity_decode($m[1]))];
     }
 
     return [ApodEntry::MEDIA_IMAGE, $imageUrl, NULL];

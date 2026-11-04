@@ -9,6 +9,7 @@ use Drupal\Core\Cache\CacheableResponse;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\image\ImageStyleInterface;
@@ -28,6 +29,7 @@ final class FeedController extends ControllerBase {
     private readonly ArchiveRepository $archive,
     ConfigFactoryInterface $configFactory,
     EntityTypeManagerInterface $entityTypeManager,
+    private readonly FileUrlGeneratorInterface $fileUrlGenerator,
   ) {
     $this->configFactory = $configFactory;
     $this->entityTypeManager = $entityTypeManager;
@@ -41,6 +43,7 @@ final class FeedController extends ControllerBase {
       $container->get('stjernekig.archive'),
       $container->get('config.factory'),
       $container->get('entity_type.manager'),
+      $container->get('file_url_generator'),
     );
   }
 
@@ -93,6 +96,20 @@ final class FeedController extends ControllerBase {
         $x->startElement('media:content');
         $x->writeAttribute('url', $image);
         $x->writeAttribute('medium', 'image');
+        $x->endElement();
+      }
+      $video = $node->get('field_apod_video')->entity;
+      if ($video instanceof FileInterface) {
+        $videoUrl = $this->fileUrlGenerator->generateAbsoluteString($video->getFileUri());
+        $x->startElement('enclosure');
+        $x->writeAttribute('url', $videoUrl);
+        $x->writeAttribute('length', (string) (int) $video->getSize());
+        $x->writeAttribute('type', (string) $video->getMimeType());
+        $x->endElement();
+        $x->startElement('media:content');
+        $x->writeAttribute('url', $videoUrl);
+        $x->writeAttribute('medium', 'video');
+        $x->writeAttribute('type', (string) $video->getMimeType());
         $x->endElement();
       }
       $x->writeElement('description', $description);

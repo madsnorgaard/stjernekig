@@ -6,6 +6,7 @@ namespace Drupal\Tests\stjernekig\Unit;
 
 use Drupal\stjernekig\Client\ApodEntry;
 use Drupal\stjernekig\Client\ApodParser;
+use Drupal\stjernekig\Media\VideoSource;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -68,10 +69,49 @@ final class ApodParserTest extends UnitTestCase {
     $this->assertSame('2026-10-18', $entry->date);
     $this->assertSame(ApodEntry::MEDIA_VIDEO, $entry->mediaType);
     $this->assertSame('https://www.youtube-nocookie.com/embed/DzrCEm1ZBRY', $entry->videoUrl);
+    $this->assertSame(VideoSource::YOUTUBE, $entry->videoSource()?->provider);
     $this->assertSame('Credit', $entry->creditLabel);
     $this->assertNotSame('', $entry->creditText());
     // Post-move entries have no migration URL; derive the classic one.
     $this->assertSame('https://apod.nasa.gov/apod/ap261018.html', $entry->legacyUrl);
+  }
+
+  /**
+   * NASA now self-hosts some clips as MP4 in a plain video tag.
+   *
+   * @covers ::fromRestItem
+   */
+  public function testSelfHostedVideoEntry(): void {
+    $entry = $this->parser->fromRestItem($this->fixture('video-file-2026-10-28'));
+
+    $this->assertSame('2026-10-28', $entry->date);
+    $this->assertSame('The Mutual Occultation of Ganymede and Io', $entry->title);
+    $this->assertSame(ApodEntry::MEDIA_VIDEO, $entry->mediaType);
+    $this->assertSame('https://assets.science.nasa.gov/content/dam/science/cds/apod/apod/2026/october/occultation.mp4', $entry->videoUrl);
+    $source = $entry->videoSource();
+    $this->assertNotNull($source);
+    $this->assertSame(VideoSource::FILE, $source->provider);
+    $this->assertSame('video/mp4', $source->mimeType);
+    $this->assertNull($source->embedUrl());
+    // The still is the featured image, minus NASA's resize query.
+    $this->assertSame('https://assets.science.nasa.gov/dynamicimage/assets/science/cds/apod/apod/2026/october/occultation.jpeg', $entry->imageUrl);
+    $this->assertSame('Credit & Copyright', $entry->creditLabel);
+    $this->assertStringContainsString('Michael Wong', $entry->creditText());
+    $this->assertSame('file', $entry->toArray()['video_provider']);
+  }
+
+  /**
+   * Without a featured image the player's poster becomes the still.
+   *
+   * @covers ::fromRestItem
+   */
+  public function testVideoPosterIsTheFallbackStill(): void {
+    $item = $this->fixture('video-file-2026-10-28');
+    $item['featured_image_url'] = '';
+    $entry = $this->parser->fromRestItem($item);
+
+    $this->assertSame(ApodEntry::MEDIA_VIDEO, $entry->mediaType);
+    $this->assertSame('https://assets.science.nasa.gov/content/dam/science/cds/apod/apod/2026/october/occultation.jpeg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg', $entry->imageUrl);
   }
 
   /**

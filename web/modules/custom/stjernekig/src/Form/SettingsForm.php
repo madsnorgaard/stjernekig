@@ -78,9 +78,23 @@ final class SettingsForm extends ConfigFormBase {
     ];
     $form['media']['max_bytes'] = [
       '#type' => 'number',
-      '#title' => $this->t('Largest file to download (bytes)'),
+      '#title' => $this->t('Largest picture to download (bytes)'),
       '#default_value' => $config->get('media.max_bytes'),
       '#min' => 0,
+    ];
+    $form['media']['store_videos'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Keep a local copy of video files'),
+      '#description' => $this->t('NASA hosts some video days as plain MP4 files. With this on they are downloaded next to the pictures and played from here, so the entry keeps working if the file disappears at the source. YouTube and Vimeo days are always played through their own player and nothing is stored.'),
+      '#default_value' => $config->get('media.store_videos'),
+    ];
+    $form['media']['video_max_bytes'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Largest video to download (bytes)'),
+      '#description' => $this->t('Larger files are streamed from the source instead. Recent clips range from a few hundred kilobytes to about fifty megabytes.'),
+      '#default_value' => $config->get('media.video_max_bytes'),
+      '#min' => 0,
+      '#states' => ['visible' => [':input[name="store_videos"]' => ['checked' => TRUE]]],
     ];
 
     $form['archive'] = [
@@ -151,6 +165,8 @@ final class SettingsForm extends ConfigFormBase {
       ->set('source.timeout', (int) $form_state->getValue('timeout'))
       ->set('media.store_copyrighted', (bool) $form_state->getValue('store_copyrighted'))
       ->set('media.max_bytes', (int) $form_state->getValue('max_bytes'))
+      ->set('media.store_videos', (bool) $form_state->getValue('store_videos'))
+      ->set('media.video_max_bytes', (int) $form_state->getValue('video_max_bytes'))
       ->set('archive.start_date', (string) $form_state->getValue('start_date'))
       ->set('archive.items_per_page', (int) $form_state->getValue('items_per_page'))
       ->set('archive.feed_items', (int) $form_state->getValue('feed_items'))

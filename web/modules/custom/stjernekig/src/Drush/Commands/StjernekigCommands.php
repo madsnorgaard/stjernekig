@@ -279,6 +279,46 @@ final class StjernekigCommands extends DrushCommands {
   }
 
   /**
+   * Re-import video days so they get a still and a local copy of the file.
+   *
+   * Entries imported before local video storage existed only hold the
+   * remote URL. This fetches them again from the source (metadata, still
+   * and, for self-hosted clips, the file itself). Safe to re-run.
+   */
+  #[CLI\Command(name: 'stjernekig:refresh-videos', aliases: ['sk:videos'])]
+  #[CLI\Option(name: 'all', description: 'Refresh every video day, not only those missing a still or a local file.')]
+  #[CLI\Option(name: 'dry-run', description: 'List the dates that would be refreshed without touching them.')]
+  #[CLI\Usage(name: 'drush stjernekig:refresh-videos', description: 'Download what is missing for existing video days.')]
+  public function refreshVideos(array $options = ['all' => FALSE, 'dry-run' => FALSE]): void {
+    $dates = [];
+    foreach ($this->archive->videoDates() as $date => $node) {
+      if ($options['all'] || $this->importer->videoNeedsRefresh($node)) {
+        $dates[] = $date;
+      }
+    }
+    if (!$dates) {
+      $this->io()->success('Every video day already has what it needs.');
+      return;
+    }
+    $this->io()->writeln(sprintf('%d video day(s) to refresh.', count($dates)));
+    if ($options['dry-run']) {
+      $this->io()->listing($dates);
+      return;
+    }
+    $totals = [];
+    $bar = $this->io()->createProgressBar(count($dates));
+    foreach ($dates as $date) {
+      $result = $this->importer->importDate($date, TRUE);
+      $totals[$result->value] = ($totals[$result->value] ?? 0) + 1;
+      $bar->advance();
+      $this->client->throttle();
+    }
+    $bar->finish();
+    $this->io()->newLine();
+    $this->report($totals);
+  }
+
+  /**
    * Forget which dates the source said were empty, so fill-gaps retries them.
    */
   #[CLI\Command(name: 'stjernekig:forget-missing', aliases: ['sk:forget'])]

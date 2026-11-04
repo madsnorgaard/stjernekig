@@ -27,7 +27,13 @@ stjernekig.settings:
           label: 'Download pictures whose credit line carries a copyright notice'
         max_bytes:
           type: integer
-          label: 'Largest media file to download, in bytes'
+          label: 'Largest picture to download, in bytes'
+        store_videos:
+          type: boolean
+          label: 'Keep a local copy of self-hosted video files'
+        video_max_bytes:
+          type: integer
+          label: 'Largest video file to download, in bytes'
     archive:
       type: mapping
       label: 'Archive'

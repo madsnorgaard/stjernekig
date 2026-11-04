@@ -58,6 +58,15 @@ The import is idempotent: if the container restarts midway, run it again.
 
 Disk: roughly 11,500 pictures at a few hundred kilobytes to a few megabytes
 each, plus image style derivatives as pages are first viewed. Plan for 10 GB.
+Self-hosted video days add their MP4 (a few hundred kilobytes to about
+50 MB each; capped by the "largest video" setting, default 200 MB).
+
+Video days imported before local video storage existed hold only the remote
+URL. After deploying that change, fetch their stills and clips once:
+
+```bash
+docker compose exec -u www-data drupal vendor/bin/drush stjernekig:refresh-videos
+```
 
 ## 4. Continuous deployment
 

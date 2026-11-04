@@ -14,6 +14,7 @@ use Drupal\file\FileRepositoryInterface;
 use Drupal\node\NodeInterface;
 use Drupal\stjernekig\Client\ApodClient;
 use Drupal\stjernekig\Client\ApodEntry;
+use Drupal\stjernekig\Media\VideoSource;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
@@ -116,6 +117,7 @@ final class ApodImporter {
 
     try {
       $file = $this->fetchMedia($entry, $existing);
+      $video = $this->fetchVideo($entry, $existing);
 
       /** @var \Drupal\node\NodeInterface $node */
       $node = $existing ?? $this->entityTypeManager->getStorage('node')->create([
@@ -137,6 +139,7 @@ final class ApodImporter {
       $node->set('field_apod_remote_id', $entry->remoteId);
       $node->set('field_apod_copyrighted', $entry->isCopyrighted());
       $node->set('field_apod_image', $file ? ['target_id' => $file->id(), 'alt' => mb_substr($entry->title, 0, 512)] : NULL);
+      $node->set('field_apod_video', $video ? ['target_id' => $video->id(), 'display' => 1] : NULL);
       $node->set('created', (int) strtotime($entry->date . ' 12:00:00 UTC'));
       $node->save();
 
@@ -246,6 +249,127 @@ final class ApodImporter {
     $destination = $directory . '/' . $entry->date . '-' . $basename;
 
     return $this->fileRepository->writeData($contents, $destination, FileExists::Replace);
+  }
+
+  /**
+   * Whether a stored video entry still lacks what the player needs.
+   *
+   * True for self-hosted video days without a local copy of the file, and
+   * for any video day without a still. Used by stjernekig:refresh-videos.
+   */
+  public function videoNeedsRefresh(NodeInterface $node): bool {
+    if ($node->get('field_apod_media_type')->value !== ApodEntry::MEDIA_VIDEO) {
+      return FALSE;
+    }
+    if ($node->get('field_apod_image')->isEmpty()) {
+      return TRUE;
+    }
+    $url = (string) $node->get('field_apod_video_url')->value;
+    return $url !== '' && VideoSource::isFileUrl($url) && $node->get('field_apod_video')->isEmpty();
+  }
+
+  /**
+   * Keep a local copy of self-hosted video files.
+   *
+   * The archive should outlive NASA's CDN, which rewrites paths now and then.
+   *
+   * Embedded videos (YouTube, Vimeo) cannot be downloaded and return NULL. A
+   * failed download is logged but does not fail the entry: the page falls
+   * back to streaming from the source, and refresh-videos can retry later.
+   */
+  private function fetchVideo(ApodEntry $entry, ?NodeInterface $existing): ?FileInterface {
+    $source = $entry->videoSource();
+    if ($source === NULL || $source->provider !== VideoSource::FILE) {
+      return NULL;
+    }
+    $config = $this->configFactory->get('stjernekig.settings');
+    if (!$config->get('media.store_videos')) {
+      return NULL;
+    }
+    if ($entry->isCopyrighted() && !$config->get('media.store_copyrighted')) {
+      return NULL;
+    }
+
+    // Keep the file we already have when refreshing metadata.
+    if ($existing && !$existing->get('field_apod_video')->isEmpty()) {
+      if ((string) $existing->get('field_apod_video_url')->value === $source->url) {
+        /** @var \Drupal\file\FileInterface|null $file */
+        $file = $existing->get('field_apod_video')->entity;
+        if ($file instanceof FileInterface && is_file($this->fileSystem->realpath($file->getFileUri()) ?: '')) {
+          return $file;
+        }
+      }
+    }
+
+    $max = (int) $config->get('media.video_max_bytes');
+    // A real path: Guzzle's sink cannot write through a stream wrapper.
+    $temporary = $this->fileSystem->tempnam($this->fileSystem->getTempDirectory(), 'apod-video-');
+    if ($temporary === FALSE) {
+      $this->logger->warning('Video for @date not stored: no temporary directory.', ['@date' => $entry->date]);
+      return NULL;
+    }
+    try {
+      $response = $this->httpClient->request('GET', $source->url, [
+        'timeout' => 600,
+        'sink' => $temporary,
+        'headers' => ['User-Agent' => 'Stjernekig/1.0 (+https://github.com/madsnorgaard/stjernekig)'],
+        'on_headers' => static function ($response) use ($max): void {
+          $length = (int) $response->getHeaderLine('Content-Length');
+          if ($max > 0 && $length > $max) {
+            throw new \RuntimeException("Video is $length bytes, above the configured limit of $max.");
+          }
+          $mime = strtolower(trim(explode(';', $response->getHeaderLine('Content-Type'))[0]));
+          if (!VideoSource::isStorableMime($mime)) {
+            throw new \RuntimeException("Video is served as $mime, not a type we store.");
+          }
+        },
+      ]);
+      $size = (int) @filesize($temporary);
+      if ($size === 0) {
+        throw new \RuntimeException('Video download was empty.');
+      }
+      if ($max > 0 && $size > $max) {
+        throw new \RuntimeException('Video exceeds the configured size limit.');
+      }
+
+      $directory = 'public://apod/' . substr($entry->date, 0, 4) . '/' . substr($entry->date, 5, 2);
+      if (!$this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+        throw new \RuntimeException("Cannot create $directory.");
+      }
+      $mime = strtolower(trim(explode(';', $response->getHeaderLine('Content-Type'))[0]));
+      $extension = $source->extension() ?? 'mp4';
+      $basename = basename((string) parse_url($source->url, PHP_URL_PATH));
+      $basename = preg_replace('/[^A-Za-z0-9._-]+/', '_', $basename) ?: 'apod';
+      if (!preg_match('/\.' . preg_quote($extension, '/') . '$/i', $basename)) {
+        $basename = preg_replace('/\.[A-Za-z0-9]+$/', '', $basename) . '.' . $extension;
+      }
+      $destination = $directory . '/' . $entry->date . '-' . $basename;
+      $uri = $this->fileSystem->move($temporary, $destination, FileExists::Replace);
+
+      // Reuse the file entity when a previous copy lived at the same URI.
+      $fileStorage = $this->entityTypeManager->getStorage('file');
+      $files = $fileStorage->loadByProperties(['uri' => $uri]);
+      /** @var \Drupal\file\FileInterface $file */
+      $file = $files ? reset($files) : $fileStorage->create(['uri' => $uri, 'uid' => 1]);
+      $file->setFilename($entry->date . '-' . $basename);
+      $file->setMimeType($mime);
+      $file->setSize($size);
+      $file->setPermanent();
+      $file->save();
+      return $file;
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Video for @date not stored, the page streams it from the source instead: @message', [
+        '@date' => $entry->date,
+        '@message' => $e->getPrevious()?->getMessage() ?? $e->getMessage(),
+      ]);
+      return NULL;
+    }
+    finally {
+      if (is_file($temporary)) {
+        @unlink($temporary);
+      }
+    }
   }
 
   /**

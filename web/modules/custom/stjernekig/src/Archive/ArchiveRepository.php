@@ -273,6 +273,24 @@ final class ArchiveRepository {
   }
 
   /**
+   * Every video day, oldest first.
+   *
+   * @return array<string, \Drupal\node\NodeInterface>
+   *   Date => node.
+   */
+  public function videoDates(): array {
+    $query = $this->baseQuery()->orderBy('d.field_apod_date_value', 'ASC');
+    $query->join('node__field_apod_media_type', 'm', 'm.entity_id = n.nid AND m.deleted = 0');
+    $query->condition('m.field_apod_media_type_value', 'video');
+    $ids = $this->fetchIds($query);
+    $dates = [];
+    foreach ($this->loadMultiple($ids) as $node) {
+      $dates[(string) $node->get('field_apod_date')->value] = $node;
+    }
+    return $dates;
+  }
+
+  /**
    * Load nodes in the order of the given IDs.
    *
    * @param int[] $ids
