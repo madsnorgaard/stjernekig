@@ -15,11 +15,13 @@ dependencies:
     - field.field.node.apod_entry.field_apod_remote_id
     - field.field.node.apod_entry.field_apod_remote_url
     - field.field.node.apod_entry.field_apod_source_url
+    - field.field.node.apod_entry.field_apod_video
     - field.field.node.apod_entry.field_apod_video_url
     - image.style.thumbnail
     - node.type.apod_entry
   module:
     - datetime
+    - file
     - image
     - text
   enforced:
@@ -121,6 +123,13 @@ content:
     settings:
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_apod_video:
+    type: file_generic
+    weight: 14
+    region: content
+    settings:
+      progress_indicator: throbber
     third_party_settings: {  }
   field_apod_video_url:
     type: string_textfield

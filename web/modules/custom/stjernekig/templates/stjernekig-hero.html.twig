@@ -5,19 +5,69 @@
  *
  * Available variables:
  * - media_type: 'image' or 'video'.
- * - image: a render array for the local picture, or null.
- * - video_url: embed URL for video entries.
+ * - image: a render array for the local picture (or the video still), or null.
+ * - video: for video days, how to play it (see stjernekig_video_info()):
+ *   provider ('file', 'youtube', 'vimeo', 'unknown'), provider_label, src,
+ *   mime, embed_url, watch_url, poster_url, bytes, size, local, remote_url,
+ *   autoplay.
  * - remote_url: full resolution original at NASA.
- * - title: entry title, used for alt and iframe title.
+ * - title: entry title, used for alt and player titles.
  * - copyrighted: whether the credit line carries a copyright notice.
  * - source_url: the entry's page at NASA.
  */
 #}
-<figure class="apod-hero apod-hero--{{ media_type }}">
-  {% if media_type == 'video' and video_url %}
-    <div class="apod-video">
-      <iframe src="{{ video_url }}" title="{{ title }}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<figure class="apod-hero apod-hero--{{ media_type }}{% if video %} apod-hero--{{ video.provider }}{% endif %}">
+  {% if media_type == 'video' and video and video.provider == 'file' %}
+    {# Self-hosted clip: the browser's own player, from our copy when we have one. #}
+    <div class="apod-video apod-video--file">
+      <video class="apod-video__player" controls playsinline preload="metadata" data-loop-max="30"{% if video.autoplay %} data-autoplay{% endif %}{% if video.poster_url %} poster="{{ video.poster_url }}"{% endif %} title="{{ title }}">
+        <source src="{{ video.src }}"{% if video.mime %} type="{{ video.mime }}"{% endif %}>
+        <a href="{{ video.src }}">{{ 'Download the video'|t }}</a>
+      </video>
     </div>
+    <figcaption class="apod-video__bar">
+      <span class="apod-video__hint">
+        {% if video.local %}
+          {{ 'Video, served from this archive'|t }}{% if video.size %} · {{ video.size }}{% endif %}
+        {% else %}
+          {{ 'Video, streamed from NASA'|t }}
+        {% endif %}
+      </span>
+      <span class="apod-video__actions">
+        <a class="apod-video__action" href="{{ video.src }}" download>{{ 'Download'|t }}</a>
+        {% if video.local and video.remote_url %}<a class="apod-video__action" href="{{ video.remote_url }}" rel="noopener">{{ 'Original at NASA'|t }}</a>{% endif %}
+      </span>
+    </figcaption>
+  {% elseif media_type == 'video' and video and video.embed_url %}
+    {# Third-party player behind a click-to-play facade: nothing is requested from the provider until play is pressed. #}
+    <div class="apod-video apod-video--embed" data-embed="{{ video.embed_url }}" data-title="{{ title }}">
+      <a class="apod-video__facade" href="{{ video.watch_url }}" rel="noopener">
+        {% if image %}
+          {{ image }}
+        {% else %}
+          <span class="apod-video__facade-empty" aria-hidden="true">✦</span>
+        {% endif %}
+        <span class="apod-video__play" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="64" height="64" focusable="false"><circle cx="32" cy="32" r="31" fill="currentColor" opacity="0.92"/><path d="M26 20v24l20-12z" fill="#10131a"/></svg>
+        </span>
+        <span class="visually-hidden">{{ 'Play the video on @provider'|t({'@provider': video.provider_label}) }}</span>
+      </a>
+    </div>
+    <figcaption class="apod-video__bar">
+      <span class="apod-video__hint">{{ 'Plays from @provider. Nothing is loaded from there until you press play.'|t({'@provider': video.provider_label}) }}</span>
+      <span class="apod-video__actions">
+        <a class="apod-video__action" href="{{ video.watch_url }}" rel="noopener">{{ 'Open on @provider'|t({'@provider': video.provider_label}) }}</a>
+      </span>
+    </figcaption>
+  {% elseif media_type == 'video' and video %}
+    {# A player we do not recognise: show the still and link out. #}
+    {% if image %}
+      <a href="{{ video.watch_url }}" class="apod-hero__link" rel="noopener">{{ image }}</a>
+    {% endif %}
+    <figcaption class="apod-video__bar">
+      <span class="apod-video__hint">{{ 'This video plays at the source.'|t }}</span>
+      <span class="apod-video__actions"><a class="apod-video__action" href="{{ video.watch_url }}" rel="noopener">{{ 'Watch it there'|t }}</a></span>
+    </figcaption>
   {% elseif image %}
     {% if remote_url %}<a href="{{ remote_url }}" class="apod-hero__link" rel="noopener" title="{{ 'Full resolution at NASA'|t }}">{% endif %}
       {{ image }}

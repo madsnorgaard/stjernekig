@@ -36,8 +36,8 @@ The REST item carries the rendered article HTML. `ApodParser` picks it apart:
 | --- | --- |
 | `date` | `date` (post date, local time, the day the picture is for) |
 | `title` | `title.rendered` with the `APOD: 2024 December 25 –` prefix removed; falls back to the `<h1>` in content |
-| `mediaType`, `videoUrl` | An `<iframe>` (YouTube or Vimeo) or `<video>` in the hero block before the `<h1>` means a video day |
-| `imageUrl` | The `<a href>` of the hero `<figure>` (full resolution asset), else the `<img src>`, else `featured_image_url`; CDN resize parameters stripped; generic placeholder thumbnails ignored |
+| `mediaType`, `videoUrl` | An `<iframe>` (YouTube or Vimeo, normalised to the privacy embed URL) or a `<video>`/`<source>` (NASA's own MP4, since late 2026) in the hero block before the `<h1>` means a video day. `VideoSource::fromUrl()` tells the two apart later |
+| `imageUrl` | The `<a href>` of the hero `<figure>` (full resolution asset), else the `<img src>`, else `featured_image_url`, else the `<video poster>`; CDN resize parameters stripped; generic placeholder thumbnails ignored |
 | `explanationHtml` | `<p class="media-detail-hero__description">` with the "Explanation:" lead-in and the "Tomorrow's picture" trailer removed; only `a, em, strong, b, i, br, sub, sup, cite` kept; links to `apYYMMDD.html` rewritten to `/apod/YYYY-MM-DD` |
 | `creditLabel`, `creditHtml` | The first row of the metadata table whose label mentions credit, copyright or licence. NASA sometimes writes "Image Credit & Copyright:" inside the value cell; that prefix becomes the label |
 | `authors` | The "Authors & editors" row |
@@ -45,9 +45,9 @@ The REST item carries the rendered article HTML. `ApodParser` picks it apart:
 | `legacyUrl` | `migration_source_url`, or derived as `https://apod.nasa.gov/apod/apYYMMDD.html` for entries created after the move |
 | `remoteId`, `modified` | `id`, `modified_gmt` |
 
-`tests/src/Unit/fixtures/` holds three trimmed real payloads (an image day, a
-video day, the very first entry from 1995) and the parser tests run against
-them. If NASA changes the markup, those tests are the first thing to fail.
+`tests/src/Unit/fixtures/` holds four trimmed real payloads (an image day, a
+YouTube day, a self-hosted MP4 day, the very first entry from 1995) and the
+parser tests run against them. If NASA changes the markup, those tests are the first thing to fail.
 
 ## Rights
 

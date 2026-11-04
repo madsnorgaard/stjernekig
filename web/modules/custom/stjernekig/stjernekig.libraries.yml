@@ -3,3 +3,8 @@ archive:
   css:
     component:
       css/archive.css: {}
+  js:
+    js/video.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

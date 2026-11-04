@@ -14,6 +14,8 @@ use Drupal\file\FileInterface;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\node\NodeInterface;
 use Drupal\stjernekig\Importer\ApodImporter;
+use Drupal\stjernekig\Media\VideoSource;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 
 /**
  * Implements hook_cron().
@@ -61,7 +63,7 @@ function stjernekig_theme(): array {
       'variables' => [
         'media_type' => 'image',
         'image' => NULL,
-        'video_url' => NULL,
+        'video' => NULL,
         'remote_url' => NULL,
         'title' => '',
         'copyrighted' => FALSE,
@@ -165,7 +167,7 @@ function stjernekig_node_view(array &$build, EntityInterface $entity, EntityView
       '#theme' => 'stjernekig_hero',
       '#media_type' => (string) $entity->get('field_apod_media_type')->value,
       '#image' => $image,
-      '#video_url' => $entity->get('field_apod_video_url')->value,
+      '#video' => stjernekig_video_info($entity),
       '#remote_url' => $entity->get('field_apod_remote_url')->value,
       '#title' => (string) $entity->label(),
       '#copyrighted' => (bool) $entity->get('field_apod_copyrighted')->value,
@@ -228,6 +230,54 @@ function stjernekig_node_view(array &$build, EntityInterface $entity, EntityView
 }
 
 /**
+ * Everything the hero template needs to play a video day.
+ *
+ * @return array<string, mixed>|null
+ *   Provider, player URLs, poster and size, or NULL for picture days.
+ */
+function stjernekig_video_info(NodeInterface $entity): ?array {
+  $url = (string) $entity->get('field_apod_video_url')->value;
+  if ($url === '') {
+    return NULL;
+  }
+  $source = VideoSource::fromUrl($url);
+  $local = $entity->get('field_apod_video')->entity;
+  $still = $entity->get('field_apod_image')->entity;
+
+  $src = $source->url;
+  $bytes = NULL;
+  $mime = $source->mimeType;
+  if ($local instanceof FileInterface) {
+    $src = \Drupal::service('file_url_generator')->generateString($local->getFileUri());
+    $bytes = (int) $local->getSize();
+    $mime = $local->getMimeType() ?: $mime;
+  }
+  $poster = NULL;
+  if ($still instanceof FileInterface) {
+    $style = ImageStyle::load('apod_hero');
+    $poster = $style ? $style->buildUrl($still->getFileUri()) : NULL;
+  }
+  // Only clips small enough to be cheap on mobile data get GIF behaviour.
+  $local_bytes = 8 * 1024 * 1024;
+
+  return [
+    'provider' => $source->provider,
+    'provider_label' => $source->providerLabel(),
+    'src' => $src,
+    'mime' => $mime,
+    'embed_url' => $source->embedUrl(TRUE),
+    'watch_url' => $source->watchUrl(),
+    'poster_url' => $poster,
+    'bytes' => $bytes,
+    'size' => $bytes ? ByteSizeMarkup::create($bytes) : NULL,
+    'local' => $local instanceof FileInterface,
+    'remote_url' => $source->url,
+    // Short clips we host ourselves may play silently in a loop, like a GIF.
+    'autoplay' => $bytes !== NULL && $bytes <= $local_bytes,
+  ];
+}
+
+/**
  * Implements hook_page_attachments().
  *
  * Social and search metadata for entry pages.
@@ -260,6 +310,17 @@ function stjernekig_page_attachments(array &$attachments): void {
       $tags[] = ['property', 'og:image:width', '1200'];
       $tags[] = ['property', 'og:image:height', '630'];
     }
+  }
+  $video = stjernekig_video_info($node);
+  if ($video && $video['provider'] === VideoSource::FILE) {
+    $src = (string) $video['src'];
+    $absolute = str_starts_with($src, '/') ? Url::fromUri('internal:' . $src, ['absolute' => TRUE])->toString() : $src;
+    $tags[] = ['property', 'og:video', $absolute];
+    $tags[] = ['property', 'og:video:type', (string) $video['mime']];
+  }
+  elseif ($video && $video['embed_url']) {
+    $tags[] = ['property', 'og:video', (string) $video['embed_url']];
+    $tags[] = ['property', 'og:video:type', 'text/html'];
   }
   foreach ($tags as $i => [$attribute, $name, $content]) {
     if ($content === '') {

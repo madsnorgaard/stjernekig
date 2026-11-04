@@ -18,8 +18,11 @@ modules beyond the admin toolbar.
   credits and media.
 - **Handles pictures and videos.** Image days are downloaded at full resolution
   and served through image styles (card, calendar thumbnail, hero, social card).
-  Video days embed the YouTube or Vimeo player through the privacy-friendly
-  `youtube-nocookie` domain.
+  Video days come in two kinds. Clips NASA hosts itself (MP4) are downloaded
+  next to the pictures and played in the browser's own player, with the still
+  as poster; short ones loop silently like a GIF while in view. YouTube and
+  Vimeo days show the still behind a play button and only load the provider's
+  player (via `youtube-nocookie`, `dnt=1`) when it is pressed.
 - **Respects rights.** Every entry records whether its credit line carries a
   copyright notice. A setting lets you keep copyrighted pictures as link-outs
   only, while NASA's own public domain pictures are always stored.
@@ -72,6 +75,7 @@ All import commands are Drush commands inside the `drupal` container. Shorten
 | `drush stjernekig:status` | Coverage: counts, first and last date, gaps, queue length, entries at the source. |
 | `drush stjernekig:peek [date]` | Fetch one entry and print what the parser made of it, without saving. |
 | `drush stjernekig:forget-missing` | Clear the list of dates the source said were empty. |
+| `drush stjernekig:refresh-videos` | Re-import video days missing a still or a local copy of the clip. `--all` does every video day, `--dry-run` lists them. |
 
 The full backfill is about 11,500 entries. Expect a few hours and several
 gigabytes of pictures. `scripts/backfill.sh` runs it detached and logs to
@@ -145,7 +149,8 @@ One content type, `apod_entry`, one node per day. Fields:
 | `field_apod_authors` | string | The APOD editors credited that day |
 | `field_apod_media_type` | list | `image` or `video` |
 | `field_apod_image` | image | The picture, or a still for video days; stored under `files/apod/YYYY/MM/` |
-| `field_apod_video_url` | string | Embed URL for video days |
+| `field_apod_video_url` | string | Video days: the embed URL (YouTube, Vimeo) or the MP4 URL at NASA |
+| `field_apod_video` | file | Local copy of the MP4 for self-hosted video days; stored under `files/apod/YYYY/MM/` |
 | `field_apod_remote_url` | string | Full resolution original at NASA |
 | `field_apod_source_url`, `field_apod_legacy_url` | string | The science.nasa.gov page and the classic apod.nasa.gov address |
 | `field_apod_remote_id` | integer | WordPress post ID at the source |

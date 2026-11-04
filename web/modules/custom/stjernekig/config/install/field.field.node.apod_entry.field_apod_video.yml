@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  config:
+  - field.storage.node.field_apod_video
+  - node.type.apod_entry
+  module:
+  - file
+  enforced:
+    module:
+    - stjernekig
+id: node.apod_entry.field_apod_video
+field_name: field_apod_video
+entity_type: node
+bundle: apod_entry
+label: Video
+description: A local copy of the video file for self-hosted video days. Embedded (YouTube, Vimeo) days have no file.
+required: false
+translatable: false
+default_value: []
+default_value_callback: ''
+settings:
+  handler: default:file
+  handler_settings: {}
+  file_directory: apod/[date:custom:Y]/[date:custom:m]
+  file_extensions: mp4 m4v webm ogv ogg mov
+  max_filesize: ''
+  description_field: false
+field_type: file

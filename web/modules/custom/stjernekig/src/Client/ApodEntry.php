@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\stjernekig\Client;
 
+use Drupal\stjernekig\Media\VideoSource;
+
 /**
  * One normalised Astronomy Picture of the Day, independent of its source.
  */
@@ -66,6 +68,16 @@ final class ApodEntry {
   }
 
   /**
+   * How the video of a video day is served, or NULL for picture days.
+   */
+  public function videoSource(): ?VideoSource {
+    if ($this->mediaType !== self::MEDIA_VIDEO || $this->videoUrl === NULL || $this->videoUrl === '') {
+      return NULL;
+    }
+    return VideoSource::fromUrl($this->videoUrl);
+  }
+
+  /**
    * Credit line as plain text.
    */
   public function creditText(): string {
@@ -98,6 +110,7 @@ final class ApodEntry {
       'media_type' => $this->mediaType,
       'image_url' => $this->imageUrl,
       'video_url' => $this->videoUrl,
+      'video_provider' => $this->videoSource()?->provider,
       'credit_label' => $this->creditLabel,
       'credit' => $this->creditText(),
       'copyrighted' => $this->isCopyrighted(),
